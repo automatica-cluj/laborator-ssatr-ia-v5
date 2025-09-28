@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class App implements CommandLineRunner {
 
     @Autowired
-    private Sensor sensor;
+    private SensorReadingService sensorReadingService;
 
     public static void main(String[] args) {
         System.out.println("Starting SSATR Lab Sample Application...");
@@ -23,33 +23,42 @@ public class App implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         System.out.println("=== SSATR Lab - IoT Sensor Demo ===");
-        
-        // Initialize the sensor
-        sensor.initialize();
-        
-        // Display sensor information
-        System.out.println("\n" + sensor.getStatus());
-        
-        // Perform some temperature readings
-        System.out.println("\nPerforming temperature readings:");
+
+        // Display all available sensors
+        System.out.println("\nAvailable sensors:");
+        sensorReadingService.getAllSensors().forEach(sensor ->
+            System.out.println("- " + sensor.getSensorId() + " (" + sensor.getSensorType() + ")"));
+
+        // Initialize all sensors
+        sensorReadingService.initializeAllSensors();
+
+        // Display status of all sensors
+        System.out.println("\nSensor status after initialization:");
+        sensorReadingService.getAllSensors().forEach(sensor ->
+            System.out.println(sensorReadingService.getSensorStatus(sensor.getSensorId())));
+
+        // Perform temperature readings on the first sensor
+        String firstSensorId = sensorReadingService.getAllSensors().get(0).getSensorId();
+        System.out.println("\nPerforming temperature readings on " + firstSensorId + ":");
         for (int i = 1; i <= 5; i++) {
             try {
                 Thread.sleep(1000); // Wait 1 second between readings
-                double temperature = sensor.readTemperature();
+                double temperature = sensorReadingService.readValue(firstSensorId);
                 System.out.println("Reading " + i + ": " + temperature + "°C");
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;
             }
         }
-        
-        // Display final sensor status
+
+        // Display final status of all sensors
         System.out.println("\nFinal sensor status:");
-        System.out.println(sensor.getStatus());
-        
-        // Shutdown the sensor
-        sensor.shutdown();
-        
+        sensorReadingService.getAllSensors().forEach(sensor ->
+            System.out.println(sensorReadingService.getSensorStatus(sensor.getSensorId())));
+
+        // Shutdown all sensors
+        sensorReadingService.shutdownAllSensors();
+
         System.out.println("\nApplication completed successfully!");
     }
 }

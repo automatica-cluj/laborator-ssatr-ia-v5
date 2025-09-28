@@ -40,3 +40,7 @@ buildNumber.properties
 *.iml
 .vscode/
 .eclipse/
+
+# Others
+
+CLAUDE.md
