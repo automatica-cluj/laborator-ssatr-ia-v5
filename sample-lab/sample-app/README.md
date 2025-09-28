@@ -179,14 +179,3 @@ app.sensors.type=Humidity Sensor
 3. **Dependency Injection**: Let Spring manage object creation and wiring
 4. **Testing Strategy**: Test entities, services, and integration separately
 5. **Maven Structure**: Follow standard Maven directory layout
-
-## 🤝 For Instructors
-
-This application serves as a foundation for teaching:
-- Spring Boot fundamentals
-- Clean architecture principles
-- Configuration management
-- Testing strategies in Spring
-- Console-based Spring applications
-
-Students can extend this by adding REST endpoints, databases, or more complex sensor types.
