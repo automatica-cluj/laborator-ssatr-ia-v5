@@ -11,7 +11,7 @@
     </parent>
     
     <groupId>com.ssatr.lab</groupId>
-    <artifactId>sample-app</artifactId>
+    <artifactId>sample-spring-console</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>sample-app</name>
     <description>Sample Spring Boot application for SSATR Lab</description>

@@ -2,7 +2,7 @@
 
 A simple Spring Boot console application that demonstrates IoT sensor simulation. This project showcases basic Spring Boot concepts including dependency injection, service layer architecture, configuration properties, and testing.
 
-## 🎯 Learning Objectives
+## Learning Objectives
 
 This application demonstrates:
 - **Spring Boot Console Application** using `CommandLineRunner`
@@ -12,7 +12,7 @@ This application demonstrates:
 - **Unit Testing** with JUnit 5 and Spring Boot Test
 - **Maven** project structure and dependencies
 
-## 🏗️ Application Architecture
+## Application Architecture
 
 ```
 📁 com.ssatr.lab
@@ -31,7 +31,7 @@ This application demonstrates:
 2. **SensorReadingService** - Business logic for managing multiple sensors
 3. **App** - Main application demonstrating sensor operations
 
-## ⚙️ Configuration
+## Configuration
 
 The application reads configuration from `src/main/resources/application.properties`:
 
@@ -46,7 +46,7 @@ app.sensors.type=Temperature Sensor
 
 This creates 3 sensors with IDs: `TEMP_001`, `TEMP_002`, `TEMP_003`
 
-## 🚀 How to Run
+## How to Run
 
 ### Prerequisites
 - Java 17 or higher
@@ -91,7 +91,7 @@ Sensor TEMP_003 (Temperature Sensor) initialized successfully
 Application completed successfully!
 ```
 
-## 🧪 Testing
+## Testing
 
 ### Run All Tests
 ```bash
@@ -114,7 +114,7 @@ mvn test -Dtest=SensorTest#testSensorDefaultInitialization
 - **SensorReadingServiceTest** - Tests service operations like initialization, readings, and sensor management
 - **AppTest** - Integration tests ensuring Spring context loads properly
 
-## 🎓 Spring Boot Concepts Demonstrated
+## pring Boot Concepts Demonstrated
 
 ### 1. CommandLineRunner
 ```java
@@ -153,7 +153,7 @@ private void initializeSensors() {
 }
 ```
 
-## 🔧 Customization
+## Customization
 
 ### Change Number of Sensors
 Edit `application.properties`:
@@ -172,7 +172,7 @@ app.sensors.type=Humidity Sensor
 2. Update `SensorReadingService` to handle different sensor types
 3. Modify configuration properties as needed
 
-## 📚 Key Learning Points
+## Key Learning Points
 
 1. **Separation of Concerns**: Entities hold data, Services contain business logic
 2. **Spring Configuration**: Use properties files for configurable values
