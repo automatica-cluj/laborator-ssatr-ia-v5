@@ -29,8 +29,8 @@ public class EventFrameworkDemo {
         publisher.addListener(userListener);
         publisher.addListener(counter);
         
-        System.out.println("🚀 Event Framework Demo Started");
-        System.out.println("📋 Registered " + publisher.getListenerCount() + " listeners\n");
+        System.out.println("Event Framework Demo Started");
+        System.out.println("Registered " + publisher.getListenerCount() + " listeners\n");
         
         // Create and publish some events
         Event event1 = new UserActionEvent("E001", "LOGIN", "user123");
@@ -55,12 +55,12 @@ public class EventFrameworkDemo {
         System.out.println();
         counter.printStatistics();
         
-        System.out.println("\n📈 Store Statistics:");
+        System.out.println("\nStore Statistics:");
         System.out.println("Total events: " + store.getEventCount());
         System.out.println("User actions: " + store.getEventCountByType("USER_ACTION"));
         System.out.println("Status changes: " + store.getEventCountByType("STATUS_CHANGE"));
         
-        System.out.println("\n✅ Demo completed!");
+        System.out.println("\n Demo completed!");
     }
 }
 

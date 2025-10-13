@@ -23,7 +23,7 @@ public class EventCounterListener implements EventListener {
         }
         counters.put(type, count + 1);
 
-        System.out.println("📊 Event count for " + type + ": " + (count + 1));
+        System.out.println("Event count for " + type + ": " + (count + 1));
     }
 
     public boolean canHandle(String eventType) {

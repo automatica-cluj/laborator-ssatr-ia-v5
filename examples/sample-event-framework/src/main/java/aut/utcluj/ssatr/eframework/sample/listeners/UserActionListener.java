@@ -12,7 +12,7 @@ public class UserActionListener implements EventListener {
     public void onEvent(Event event) {
         if (event instanceof UserActionEvent) {
             UserActionEvent userEvent = (UserActionEvent) event;
-            System.out.println("🔵 User " + userEvent.getUserId() +
+            System.out.println("User " + userEvent.getUserId() +
                              " performed: " + userEvent.getAction());
         }
     }
