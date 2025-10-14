@@ -1,16 +1,48 @@
-# Event-Driven System Laboratory Requirements
+# Exam Project Ideas - Real-Time Systems 
 
-## Instructions
+## Project Assignment Description
 
-Choose **ONE** of the following scenarios and implement a complete application that simulates the described system using the provided  [sample-event-framework](../examples/sample-event-framework) as your foundation. 
+### Overview
 
-## Scenario Options
+Students are required to select **one scenario** from the provided list to develop as their **semester project**. This project will be presented and evaluated during the **final exam period**.
+
+### Project Scope and Focus
+
+While each scenario describes real-world systems that might typically require fully functional mobile applications, web platforms, QR code scanning capabilities, GPS tracking, or other complex infrastructure, students are **not expected to build production-ready applications**.
+
+**The primary focus is on:**
+
+- **Solution modeling and architecture design** - demonstrating a clear understanding of system components, data flow, and interactions
+- **Technology integration** - applying and showcasing the key technologies covered during the semester
+- **Concept demonstration** - proving that core functionalities work through simulations, prototypes, or proof-of-concept implementations
+
+### Implementation Approach
+
+Students should approach their projects with practical flexibility:
+
+- **QR Code functionality** can be simulated using generated codes and mock scanning interfaces
+- **Mobile applications** can be replaced with responsive web interfaces or desktop applications
+- **GPS/location tracking** can be simulated with predefined coordinates or mock location data
+- **Hardware components** (scanners, sensors, etc.) can be emulated through software simulations
+- **Multiple user roles** can be demonstrated through different interface views or switching mechanisms
+
+### Deliverables
+
+Students will be expected to present:
+
+1. **System architecture and design documentation**
+2. **Working demonstration** of core functionalities using the required technologies
+3. **Source code** 
+
+**Remember:** The goal is to demonstrate your understanding of the technologies and your ability to design and model complex systems, not to build a market-ready product. Focus on showcasing technical competence and thoughtful system design.
+
+------
+
+## Project Scenarios
 
 ### 1. **Real-Time Attendance System**
 
-**Objective:** Create a classroom attendance system with QR code generation and real-time tracking.
-
-**Requirements:**
+**Objective:** Create a classroom attendance system with QR code generation and real-time tracking. **Requirements:**
 
 - **Professor Interface:**
   - Generate unique QR codes for each class session
@@ -31,9 +63,7 @@ Choose **ONE** of the following scenarios and implement a complete application t
 
 ### 2. **Restaurant Order Management System with Live Status**
 
-**Objective:** Build a restaurant ordering system with real-time order tracking and kitchen management.
-
-**Requirements:**
+**Objective:** Build a restaurant ordering system with real-time order tracking and kitchen management. **Requirements:**
 
 - **Table Management:**
   - Each table has a unique QR code containing table ID
@@ -56,9 +86,7 @@ Choose **ONE** of the following scenarios and implement a complete application t
 
 ### 3. **Queue Management System**
 
-**Objective:** Implement a digital queue system with real-time position tracking and wait time estimation.
-
-**Requirements:**
+**Objective:** Implement a digital queue system with real-time position tracking and wait time estimation. **Requirements:**
 
 - **Customer Experience:**
   - Generate unique QR code when joining queue
@@ -82,9 +110,7 @@ Choose **ONE** of the following scenarios and implement a complete application t
 
 ### 4. **Event Check-in with Capacity Management**
 
-**Objective:** Create an event registration system with real-time capacity monitoring and access control.
-
-**Requirements:**
+**Objective:** Create an event registration system with real-time capacity monitoring and access control. **Requirements:**
 
 - **Event Setup:**
   - Configure events with maximum capacity limits
@@ -106,9 +132,12 @@ Choose **ONE** of the following scenarios and implement a complete application t
   - Real-time notifications for capacity thresholds (75%, 90%, 100%)
   - Event analytics and reporting
 
+------
+
 ### 5. **Smart Parking Management System**
-**Objective:** Real-time parking spot allocation with QR-based access control.
-**Requirements:**
+
+**Objective:** Real-time parking spot allocation with QR-based access control. **Requirements:**
+
 - **Parking Operator:**
   - Configure parking zones with spot counts
   - Generate QR codes for reserved/pre-booked spots
@@ -124,11 +153,13 @@ Choose **ONE** of the following scenarios and implement a complete application t
   - Automatic overflow to alternate zones
   - Expiration warnings (15 min before time ends)
   - Overstay penalties calculation
+
 ------
 
 ### 6. **Library Resource Checkout System**
-**Objective:** Digital library management with real-time book availability and reservation queue.
-**Requirements:**
+
+**Objective:** Digital library management with real-time book availability and reservation queue. **Requirements:**
+
 - **Librarian Dashboard:**
   - Generate QR codes for each book/resource
   - Process checkouts and returns via scan
@@ -144,11 +175,13 @@ Choose **ONE** of the following scenarios and implement a complete application t
   - Priority queue for faculty vs students
   - Real-time availability status
   - Late fee calculations
+
 ------
 
 ### 7. **Gym Equipment Booking System**
-**Objective:** Equipment reservation with real-time usage tracking and session timers.
-**Requirements:**
+
+**Objective:** Equipment reservation with real-time usage tracking and session timers. **Requirements:**
+
 - **Gym Management:**
   - Assign QR codes to equipment (treadmills, benches, etc.)
   - Set maximum usage times per session
@@ -164,11 +197,13 @@ Choose **ONE** of the following scenarios and implement a complete application t
   - Grace period handling (5 min between sessions)
   - Peak hour wait time predictions
   - Equipment maintenance status flags
+
 ------
 
 ### 8. **Package Delivery Tracking Hub**
-**Objective:** Multi-courier package management with real-time delivery status for apartment/office buildings.
-**Requirements:**
+
+**Objective:** Multi-courier package management with real-time delivery status for apartment/office buildings. **Requirements:**
+
 - **Reception Desk:**
   - Scan incoming package QR/generate internal code
   - Log courier info and timestamp
@@ -184,11 +219,13 @@ Choose **ONE** of the following scenarios and implement a complete application t
   - Uncollected package alerts (>48 hours)
   - Storage zone occupancy monitoring
   - Generate monthly delivery reports
+
 ------
 
 ### 9. **Anonymous Feedback Collection System**
-**Objective:** Real-time feedback gathering with sentiment analysis and live visualization.
-**Requirements:**
+
+**Objective:** Real-time feedback gathering with sentiment analysis and live visualization. **Requirements:**
+
 - **Event Organizer:**
   - Generate unique QR codes for feedback sessions
   - Set custom questions or use templates
@@ -204,11 +241,13 @@ Choose **ONE** of the following scenarios and implement a complete application t
   - Word clouds from text responses
   - Response rate percentage
   - Comparative analytics across sessions
+
 ------
 
 ### 10. **Visitor/Contractor Sign-In System**
-**Objective:** Secure facility access management with real-time visitor tracking.
-**Requirements:**
+
+**Objective:** Secure facility access management with real-time visitor tracking. **Requirements:**
+
 - **Security/Reception:**
   - Pre-register expected visitors
   - Generate time-limited visitor QR passes
@@ -225,11 +264,13 @@ Choose **ONE** of the following scenarios and implement a complete application t
   - Emergency evacuation roll call
   - Visitor host notifications (arrival/departure)
   - Area access restrictions by visitor type
+
 ------
 
 ### 11. **Exam Hall Seat Allocation System**
-**Objective:** Automated exam seat assignment with QR-based verification and real-time monitoring.
-**Requirements:**
+
+**Objective:** Automated exam seat assignment with QR-based verification and real-time monitoring. **Requirements:**
+
 - **Exam Coordinator:**
   - Configure exam halls with seat layouts
   - Generate QR codes with seat assignments
@@ -245,11 +286,13 @@ Choose **ONE** of the following scenarios and implement a complete application t
   - Late arrival handling with time penalties
   - Absentee tracking and reporting
   - Emergency evacuation seat-wise accounting
+
 ------
 
 ### 12. **Hospital Appointment & Queue System**
-**Objective:** Patient appointment management with real-time queue updates and wait time notifications.
-**Requirements:**
+
+**Objective:** Patient appointment management with real-time queue updates and wait time notifications. **Requirements:**
+
 - **Front Desk:**
   - Check-in patients via QR scan
   - Assign patients to doctor queues
@@ -265,11 +308,13 @@ Choose **ONE** of the following scenarios and implement a complete application t
   - Mark consultations as complete
   - Add notes on consultation duration
   - Call next patient via system
+
 ------
 
 ### 13. **Co-working Space Desk Booking System**
-**Objective:** Hot-desking management with real-time availability and resource allocation.
-**Requirements:**
+
+**Objective:** Hot-desking management with real-time availability and resource allocation. **Requirements:**
+
 - **Space Manager:**
   - Create floor plans with desk zones
   - Generate QR codes for each desk
@@ -285,11 +330,13 @@ Choose **ONE** of the following scenarios and implement a complete application t
   - Automatic release of no-show bookings (15 min grace)
   - Popular desk analytics
   - Amenity filtering (standing desk, monitor, window view)
+
 ------
 
 ### 14. **Laundry Service Tracking System**
-**Objective:** Laundromat management with machine availability and cycle completion notifications.
-**Requirements:**
+
+**Objective:** Laundromat management with machine availability and cycle completion notifications. **Requirements:**
+
 - **Shop Interface:**
   - Generate QR codes for each machine
   - Track machine status (available/in-use/maintenance)
@@ -305,11 +352,13 @@ Choose **ONE** of the following scenarios and implement a complete application t
   - Estimated availability times
   - Machine usage statistics
   - Automatic timeout for uncollected laundry
+
 ------
 
 ### 15. **Museum/Gallery Audio Guide System**
-**Objective:** Interactive exhibit experience with QR-triggered audio guides and visitor flow analytics.
-**Requirements:**
+
+**Objective:** Interactive exhibit experience with QR-triggered audio guides and visitor flow analytics. **Requirements:**
+
 - **Curator Interface:**
   - Assign QR codes to exhibits
   - Upload audio guides and descriptions
@@ -325,4 +374,5 @@ Choose **ONE** of the following scenarios and implement a complete application t
   - Popular exhibit rankings
   - Average time spent per exhibit
   - Crowd density alerts for staff
+
 ------

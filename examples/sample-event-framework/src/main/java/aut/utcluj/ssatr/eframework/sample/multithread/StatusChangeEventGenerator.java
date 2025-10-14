@@ -10,10 +10,12 @@ public class StatusChangeEventGenerator implements Runnable {
 
     public StatusChangeEventGenerator(EventPublisher publisher) {
         this.publisher = publisher;
+        
     }
 
     @Override
     public void run() {
+        Thread.currentThread().setName("StatusChangeEventGenerator");
         System.out.println("StatusChangeEventGenerator started");
 
         while (running) {

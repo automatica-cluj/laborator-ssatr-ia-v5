@@ -20,7 +20,7 @@ public class MultithreadedEventDemo {
         controller.startAll();
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(35000);
         } catch (InterruptedException e) {
             System.out.println("Demo interrupted");
         }

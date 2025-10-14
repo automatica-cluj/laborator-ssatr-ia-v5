@@ -22,7 +22,7 @@ public class EventPublisher {
     }
 
     public void publishEvent(Event event) {
-        System.out.println("📢 Publishing: " + event);
+        System.out.println("Publishing: " + event);
 
         for (int i = 0; i < listeners.size(); i++) {
             EventListener listener = listeners.get(i);
