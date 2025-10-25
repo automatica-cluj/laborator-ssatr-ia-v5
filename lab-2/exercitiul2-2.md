@@ -24,9 +24,9 @@ Sistemul este format din următoarele componente:
 
 ### 2. Arhitectura Soluției
 
-#### A. Fluxul de Date
+#### Fluxul de Date
 
-**Flux comenzi noi (Client → Manager → Curieri):**
+**A. Flux comenzi noi (Client → Manager → Curieri):**
 
 ```
 Client → Manager Comenzi → Fanout Exchange "new_orders"
@@ -57,15 +57,15 @@ Manager Comenzi → Fanout Exchange "order_cancellations"
        Queue Curier1  Queue Curier2  Queue Curier3
 ```
 
-#### B. Componente Obligatorii
+#### Componente Obligatorii
 
-**1. Aplicația Client (Order Sender)**
+**A. Aplicația Client (Order Sender)**
 
 - Simulează clienți care plasează comenzi
 - Trimite comenzi către Manager Comenzi prin RabbitMQ
 - Include detalii: adresă livrare, produse, client_id, timestamp
 
-**2. Manager Comenzi (Order Manager)**
+**B. Manager Comenzi (Order Manager)**
 
 - Primește comenzi noi de la clienți
 - Distribuie comenzile către TOȚI curierii folosind **fanout exchange**
@@ -74,7 +74,7 @@ Manager Comenzi → Fanout Exchange "order_cancellations"
 - Notifică ceilalți curieri să anuleze/ignore comanda acceptată
 - Ține evidența comenzilor: în așteptare, procesate, refuzate
 
-**3. Aplicația Curier (Courier App)** - multiple instanțe (minim 3)
+**C. Aplicația Curier (Courier App)** - multiple instanțe (minim 3)
 
 - Fiecare curier are o **coadă proprie unică** pentru comenzi noi
 - Primește comenzi noi prin fanout
@@ -84,7 +84,7 @@ Manager Comenzi → Fanout Exchange "order_cancellations"
 - Primește notificări de anulare pentru comenzi deja acceptate de alții
 - Ignoră comenzile care au fost deja preluate
 
-**4. Broker RabbitMQ**
+**D. Broker RabbitMQ**
 
 - Gestionează exchange-uri și cozi
 - Asigură distribuția fanout
@@ -92,7 +92,7 @@ Manager Comenzi → Fanout Exchange "order_cancellations"
 
 ### 3. Structura Mesajelor
 
-#### Mesaj Comandă Nouă (Client → Manager → Curieri)
+#### A. Mesaj Comandă Nouă (Client → Manager → Curieri)
 
 ```json
 {
@@ -116,7 +116,7 @@ Manager Comenzi → Fanout Exchange "order_cancellations"
 }
 ```
 
-#### Mesaj Confirmare (Curier → Manager)
+#### B. Mesaj Confirmare (Curier → Manager)
 
 ```json
 {
@@ -128,7 +128,7 @@ Manager Comenzi → Fanout Exchange "order_cancellations"
 }
 ```
 
-#### Mesaj Anulare/Notificare (Manager → Curieri)
+#### C. Mesaj Anulare/Notificare (Manager → Curieri)
 
 ```json
 {
@@ -142,11 +142,11 @@ Manager Comenzi → Fanout Exchange "order_cancellations"
 
 ### 4. Configurația RabbitMQ
 
-In continuare este prezentata o propunere pentru configuratia RabbitMQ. 
+În continuare este prezentată o propunere pentru configurația RabbitMQ.
 
-#### Exchange-uri Necesare:
+#### A. Exchange-uri Necesare:
 
-**A. Exchange pentru comenzi noi:**
+**1. Exchange pentru comenzi noi:**
 
 ```
 Name: "new_orders"
@@ -154,17 +154,17 @@ Type: fanout
 Durable: true
 ```
 
-**B. Exchange pentru anulări:**
+**2. Exchange pentru anulări:**
 
 ```
-Name: "order_cancellations"  
+Name: "order_cancellations"
 Type: fanout
 Durable: true
 ```
 
-#### Queue-uri Necesare:
+#### B. Queue-uri Necesare:
 
-**A. Queue-uri pentru fiecare curier (comenzi noi):**
+**1. Queue-uri pentru fiecare curier (comenzi noi):**
 
 ```
 Name: "courier_<courier_id>_orders"
@@ -174,7 +174,7 @@ Durable: false (pot fi temporary queues)
 Auto-delete: true (când curierul se deconectează)
 ```
 
-**B. Queue pentru confirmări (de la curieri la manager):**
+**2. Queue pentru confirmări (de la curieri la manager):**
 
 ```
 Name: "order_confirmations"
@@ -183,7 +183,7 @@ Durable: true
 Consumers: doar Order Manager
 ```
 
-**C. Queue-uri pentru anulări (pentru fiecare curier):**
+**3. Queue-uri pentru anulări (pentru fiecare curier):**
 
 ```
 Name: "courier_<courier_id>_cancellations"
@@ -192,13 +192,22 @@ Binding: la exchange "order_cancellations"
 Auto-delete: true
 ```
 
+## Livrabile
+
+1. **Diagrama UML Capsules** (.pdf)
+2. **Codul sursă**
+3. **Fișier README.md** care să conțină:
+   - Descrierea scenariului ales (delivery, food delivery, package delivery etc.)
+   - Instrucțiuni de instalare și rulare
+   - Explicarea mecanismului de fanout și gestionarea race conditions
+
 ## Referințe
 
 - **RabbitMQ Fanout Exchange**: https://www.rabbitmq.com/tutorials/tutorial-three-python.html
 - **RabbitMQ CloudAMQP Fanout**: https://www.cloudamqp.com/blog/rabbitmq-fanout-exchange-explained.html
 - **Competing Consumers Pattern**: https://www.enterpriseintegrationpatterns.com/patterns/messaging/CompetingConsumers.html
 
-## Nota
+## Anexe - Notă
 
 Proiectul simulează un sistem real de delivery (Uber Eats, Glovo, etc.) și vă va ajuta să înțelegeți:
 

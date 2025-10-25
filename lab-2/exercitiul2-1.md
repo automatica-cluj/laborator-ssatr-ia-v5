@@ -4,19 +4,29 @@
 
 Scopul acestui exercitiu este de a pune în practică conceptul UML Capsule pentru definirea și implementarea unei soluții IoT cu caracteristici de timp real. Veți lucra cu un broker de mesaje de tip RabbitMQ configurat pentru gestionarea priorităților și constrângerilor temporale.
 
+## Descrierea Sistemului
+
+Sistemul este format din următoarele componente:
+
+- **Senzori** - două tipuri (critic și normal) care publică date
+- **Controleri** - stratificat pe două niveluri (reactiv și analitic)
+- **Actuator** - execută comenzi cu prioritate
+- **Monitor de performanță** - detectează deadline-uri ratate
+- **Broker RabbitMQ** - facilitează comunicarea între componente
+
 ## Cerințe
 
-### 1. Studiu teoretic
+### 1. Studiu Teoretic
 
 - Să se studieze conceptul IoT și aplicațiile sale în domenii cu cerințe de timp real
 - Să se studieze conceptul UML Capsules
-- Să se studieze  RabbitMQ
+- Să se studieze RabbitMQ
 
-### 2. Proiectarea soluției
+### 2. Arhitectura Soluției
 
 Să se conceapă o aplicație/soluție IoT cu arhitectură stratificată care să conțină:
 
-#### Componente obligatorii:
+#### Componente Obligatorii:
 
 **A. Doi senzori cu caracteristici diferite:**
 
@@ -59,9 +69,9 @@ Să se conceapă o aplicație/soluție IoT cu arhitectură stratificată care s�
 - Publică alarme când performanțele scad sub praguri
 - Afișează metrici în timp real (consolă sau fișier)
 
-**F. Broker RabbitMQ**
+**E. Broker RabbitMQ**
 
-### 3. Structura mesajelor
+### 3. Structura Mesajelor
 
 Fiecare mesaj de la senzor trebuie să conțină informații temporale:
 
@@ -90,7 +100,7 @@ Se va implementa mecanism care sa faciliteze comunicarea intre componente confor
    - Instrucțiuni de instalare și rulare
 
 
-## Anexa Exemple Scenarii Reale
+## Anexe - Exemple Scenarii Reale
 
 ### Scenariul A: Monitorizare industrială
 
