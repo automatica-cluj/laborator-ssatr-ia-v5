@@ -210,10 +210,3 @@ R: Accesați interfața de management la http://localhost:15672 (user: guest, pa
 - **Exemple curs:** https://github.com/automatica-cluj/curs-ssatr-ia-v5
 - **Cartea:** "Spring in Action" (disponibilă pe canalul Teams, secțiunea Books)
 
-## Notă importantă despre proiect
-
-Aplicațiile dezvoltate în acest laborator vor fi integrate în mini-proiectul final al materiei. La sfârșitul semestrului, veți extinde aceste soluții cu:
-- Baze de date pentru persistența datelor
-- Interfețe grafice pentru monitorizare
-- Mecanisme avansate de procesare a mesajelor
-- Arhitectură event-driven completă
