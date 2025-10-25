@@ -1,8 +1,8 @@
 # Sistem IoT cu Arhitectură de Timp Real
 
-## Scop proiect
+## Introducere
 
-Scopul acestui proiect este de a pune în practică conceptul UML Capsule pentru definirea și implementarea unei soluții IoT cu caracteristici de timp real. Veți lucra cu un broker de mesaje de tip RabbitMQ configurat pentru gestionarea priorităților și constrângerilor temporale.
+Scopul acestui exercitiu este de a pune în practică conceptul UML Capsule pentru definirea și implementarea unei soluții IoT cu caracteristici de timp real. Veți lucra cu un broker de mesaje de tip RabbitMQ configurat pentru gestionarea priorităților și constrângerilor temporale.
 
 ## Cerințe
 
