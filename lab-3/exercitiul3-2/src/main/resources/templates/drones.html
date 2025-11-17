@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drones - Fleet Management</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="logo">🚁 Drone Fleet Management</h1>
+            <ul class="nav-menu">
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/drones" class="active">Drones</a></li>
+                <li><a href="/missions">Missions</a></li>
+                <li><a href="/monitor">Live Monitor</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="header-actions">
+            <h1>Drone Fleet</h1>
+            <!-- TODO: Studenții pot adăuga buton pentru creare dronă nouă -->
+        </div>
+
+        <!-- Drones Table -->
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Model</th>
+                        <th>Status</th>
+                        <th>Battery</th>
+                        <th>Last Seen</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="drone : ${drones}">
+                        <td th:text="${drone.id}">DRONE-001</td>
+                        <td th:text="${drone.name}">Alpha</td>
+                        <td th:text="${drone.model}">DJI Mavic Pro</td>
+                        <td>
+                            <span class="status-badge"
+                                  th:classappend="${drone.status.toString().toLowerCase()}"
+                                  th:text="${drone.status}">IDLE</span>
+                        </td>
+                        <td>
+                            <div class="battery-container">
+                                <div class="battery-bar"
+                                     th:classappend="${drone.batteryLevel < 20} ? 'low' : (${drone.batteryLevel < 50} ? 'medium' : 'high')">
+                                    <div class="battery-fill"
+                                         th:style="'width: ' + ${drone.batteryLevel} + '%'"></div>
+                                </div>
+                                <span class="battery-text" th:text="${#numbers.formatDecimal(drone.batteryLevel, 1, 1)} + '%'">85.0%</span>
+                            </div>
+                        </td>
+                        <td th:text="${drone.lastSeen != null ? #dates.format(new java.util.Date(drone.lastSeen), 'dd-MM-yyyy HH:mm:ss') : 'N/A'}">12:34:56</td>
+                        <td class="actions-cell">
+                            <a th:href="@{/drones/{id}(id=${drone.id})}" class="btn btn-info">Details</a>
+                            <button class="btn btn-success" th:onclick="'sendCommand(\'' + ${drone.id} + '\', \'takeoff\')'">
+                                Take Off
+                            </button>
+                            <button class="btn btn-danger" th:onclick="'sendCommand(\'' + ${drone.id} + '\', \'land\')'">
+                                Land
+                            </button>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(drones)}">
+                        <td colspan="7" style="text-align: center; padding: 2rem;">
+                            No drones found. Please add drones to the system.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <p>Drone Management System - Lab 3 Exercițiul 2</p>
+    </footer>
+
+    <script>
+        // Funcție pentru trimitere comenzi prin REST API
+        function sendCommand(droneId, command) {
+            const endpoint = `/api/drones/${droneId}/${command}`;
+
+            fetch(endpoint, { method: 'POST' })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    // TODO: Studenții pot înlocui alert-ul cu notificări mai elegante
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to send command: ' + error);
+                });
+        }
+
+        // TODO: Studenții pot adăuga:
+        // - Auto-refresh tabel la interval
+        // - Filtrare și sortare
+        // - Bulk actions (comandă multiplă)
+    </script>
+</body>
+</html>

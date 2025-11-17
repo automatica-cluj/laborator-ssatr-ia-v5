@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone Management Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="logo">🚁 Drone Fleet Management</h1>
+            <ul class="nav-menu">
+                <li><a href="/" class="active">Dashboard</a></li>
+                <li><a href="/drones">Drones</a></li>
+                <li><a href="/missions">Missions</a></li>
+                <li><a href="/monitor">Live Monitor</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Fleet Dashboard</h1>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🚁</div>
+                <div class="stat-content">
+                    <h3>Total Drones</h3>
+                    <p class="stat-value" th:text="${totalDrones}">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card active">
+                <div class="stat-icon">✈️</div>
+                <div class="stat-content">
+                    <h3>Active Drones</h3>
+                    <p class="stat-value" th:text="${activeDrones}">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card warning">
+                <div class="stat-icon">🔋</div>
+                <div class="stat-content">
+                    <h3>Low Battery</h3>
+                    <p class="stat-value" th:text="${lowBatteryDrones}">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📍</div>
+                <div class="stat-content">
+                    <h3>Active Missions</h3>
+                    <p class="stat-value" th:text="${activeMissions}">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h2>Quick Actions</h2>
+            <div class="actions-grid">
+                <a href="/drones" class="action-btn">
+                    <span class="icon">📋</span>
+                    View All Drones
+                </a>
+                <a href="/missions" class="action-btn">
+                    <span class="icon">🗺️</span>
+                    View Missions
+                </a>
+                <a href="/missions/create" class="action-btn">
+                    <span class="icon">➕</span>
+                    Create Mission
+                </a>
+                <a href="/monitor" class="action-btn">
+                    <span class="icon">📡</span>
+                    Live Monitor
+                </a>
+            </div>
+        </div>
+
+        <!-- TODO: Studenții pot adăuga:
+             - Recent activity feed
+             - Charts (battery levels, flight hours, etc.)
+             - Map with drone positions
+             - Alerts and notifications
+        -->
+    </div>
+
+    <footer>
+        <p>Drone Management System - Lab 3 Exercițiul 2</p>
+    </footer>
+</body>
+</html>
