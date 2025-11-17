@@ -1,0 +1,15 @@
+package ro.utcluj.ssatr.lab3.drone;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/**
+ * Main Spring Boot Application pentru Drone Management Dashboard.
+ */
+@SpringBootApplication
+public class DroneManagementApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(DroneManagementApplication.java, args);
+    }
+}
