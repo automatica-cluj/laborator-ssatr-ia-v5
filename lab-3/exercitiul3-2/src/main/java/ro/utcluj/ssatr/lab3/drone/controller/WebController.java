@@ -80,13 +80,12 @@ public class WebController {
     }
 
     /**
-     * Pagina de monitorizare telemetrie în timp real.
-     * TODO: Studenții vor implementa WebSocket client.
+     * Pagina de monitorizare live cu hartă interactivă.
+     * Afișează toate dronele pe hartă folosind Leaflet.js.
      */
     @GetMapping("/monitor")
-    public String telemetryMonitor(Model model) {
-        model.addAttribute("drones", droneService.getAllDrones());
-        return "telemetry-monitor";
+    public String liveMonitor() {
+        return "monitor";
     }
 
     /**

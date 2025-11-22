@@ -64,10 +64,14 @@
                         <td th:text="${drone.lastSeen != null ? #dates.format(new java.util.Date(drone.lastSeen), 'dd-MM-yyyy HH:mm:ss') : 'N/A'}">12:34:56</td>
                         <td class="actions-cell">
                             <a th:href="@{/drones/{id}(id=${drone.id})}" class="btn btn-info">Details</a>
-                            <button class="btn btn-success" th:onclick="'sendCommand(\'' + ${drone.id} + '\', \'takeoff\')'">
+                            <button class="btn btn-success"
+                                    th:data-drone-id="${drone.id}"
+                                    onclick="sendCommand(this.dataset.droneId, 'takeoff')">
                                 Take Off
                             </button>
-                            <button class="btn btn-danger" th:onclick="'sendCommand(\'' + ${drone.id} + '\', \'land\')'">
+                            <button class="btn btn-danger"
+                                    th:data-drone-id="${drone.id}"
+                                    onclick="sendCommand(this.dataset.droneId, 'land')">
                                 Land
                             </button>
                         </td>

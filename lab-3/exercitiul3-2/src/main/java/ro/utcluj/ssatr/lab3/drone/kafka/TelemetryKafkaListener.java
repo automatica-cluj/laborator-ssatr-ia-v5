@@ -7,9 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import ro.utcluj.ssatr.lab3.drone.model.Drone;
+import ro.utcluj.ssatr.lab3.drone.model.DroneStatus;
 import ro.utcluj.ssatr.lab3.drone.model.TelemetrySnapshot;
 import ro.utcluj.ssatr.lab3.drone.repository.DroneRepository;
 import ro.utcluj.ssatr.lab3.drone.service.TelemetryService;
+
+import java.math.BigDecimal;
 
 /**
  * Kafka listener pentru consumarea telemetriei din topic "drone-telemetry".
@@ -48,18 +51,27 @@ public class TelemetryKafkaListener {
             }
 
             // Creare TelemetrySnapshot entity
+            // Creare TelemetrySnapshot entity
             TelemetrySnapshot snapshot = new TelemetrySnapshot();
             snapshot.setDrone(drone);
             snapshot.setTimestamp(telemetryDTO.getTimestamp());
-            snapshot.setLatitude(telemetryDTO.getLatitude());
-            snapshot.setLongitude(telemetryDTO.getLongitude());
-            snapshot.setAltitude(telemetryDTO.getAltitude());
-            snapshot.setSpeed(telemetryDTO.getSpeed());
+            snapshot.setLatitude(BigDecimal.valueOf(telemetryDTO.getLatitude()));
+            snapshot.setLongitude(BigDecimal.valueOf(telemetryDTO.getLongitude()));
+            snapshot.setAltitude(BigDecimal.valueOf(telemetryDTO.getAltitude()));
+            snapshot.setSpeed(BigDecimal.valueOf(telemetryDTO.getSpeed()));
             snapshot.setHeading(telemetryDTO.getHeading());
-            snapshot.setBatteryLevel(telemetryDTO.getBatteryLevel());
-            snapshot.setTemperature(telemetryDTO.getTemperature());
-            snapshot.setVibration(telemetryDTO.getVibration());
-            snapshot.setStatus(drone.getStatus());
+            snapshot.setBatteryLevel(BigDecimal.valueOf(telemetryDTO.getBatteryLevel()));
+            snapshot.setTemperature(BigDecimal.valueOf(telemetryDTO.getTemperature()));
+            snapshot.setVibration(BigDecimal.valueOf(telemetryDTO.getVibration()));
+
+            // Parse status from telemetry DTO (not from current drone status)
+            try {
+                snapshot.setStatus(DroneStatus.valueOf(telemetryDTO.getStatus()));
+            } catch (IllegalArgumentException e) {
+                logger.warn("Invalid status '{}' in telemetry for drone {}, keeping current status",
+                    telemetryDTO.getStatus(), telemetryDTO.getDroneId());
+                snapshot.setStatus(drone.getStatus());
+            }
 
             // Salvare în DB
             telemetryService.saveTelemetry(snapshot);

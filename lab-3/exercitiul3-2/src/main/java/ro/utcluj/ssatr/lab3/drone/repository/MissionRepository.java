@@ -11,7 +11,7 @@ import java.util.List;
  * Repository Spring Data JPA pentru Mission.
  */
 @Repository
-public interface MissionRepository extends JpaRepository<Mission, Long> {
+public interface MissionRepository extends JpaRepository<Mission, Integer> {
 
     /**
      * Găsește misiunile unei drone.

@@ -1,6 +1,7 @@
 package ro.utcluj.ssatr.lab3.drone.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 /**
  * Entity JPA pentru tabela 'telemetry_logs'.
@@ -11,24 +12,36 @@ public class TelemetrySnapshot {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "drone_id")
     private Drone drone;
 
     private Long timestamp;
-    private Double latitude;
-    private Double longitude;
-    private Double altitude;
-    private Double speed;
+
+    @Column(precision = 10, scale = 7)
+    private BigDecimal latitude;
+
+    @Column(precision = 10, scale = 7)
+    private BigDecimal longitude;
+
+    @Column(precision = 8, scale = 2)
+    private BigDecimal altitude;
+
+    @Column(precision = 6, scale = 2)
+    private BigDecimal speed;
+
     private Integer heading;
 
-    @Column(name = "battery_level")
-    private Double batteryLevel;
+    @Column(name = "battery_level", precision = 5, scale = 2)
+    private BigDecimal batteryLevel;
 
-    private Double temperature;
-    private Double vibration;
+    @Column(precision = 5, scale = 2)
+    private BigDecimal temperature;
+
+    @Column(precision = 6, scale = 4)
+    private BigDecimal vibration;
 
     @Enumerated(EnumType.STRING)
     private DroneStatus status;
@@ -38,11 +51,11 @@ public class TelemetrySnapshot {
     }
 
     // Getters and Setters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -62,35 +75,35 @@ public class TelemetrySnapshot {
         this.timestamp = timestamp;
     }
 
-    public Double getLatitude() {
+    public BigDecimal getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Double latitude) {
+    public void setLatitude(BigDecimal latitude) {
         this.latitude = latitude;
     }
 
-    public Double getLongitude() {
+    public BigDecimal getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Double longitude) {
+    public void setLongitude(BigDecimal longitude) {
         this.longitude = longitude;
     }
 
-    public Double getAltitude() {
+    public BigDecimal getAltitude() {
         return altitude;
     }
 
-    public void setAltitude(Double altitude) {
+    public void setAltitude(BigDecimal altitude) {
         this.altitude = altitude;
     }
 
-    public Double getSpeed() {
+    public BigDecimal getSpeed() {
         return speed;
     }
 
-    public void setSpeed(Double speed) {
+    public void setSpeed(BigDecimal speed) {
         this.speed = speed;
     }
 
@@ -102,27 +115,27 @@ public class TelemetrySnapshot {
         this.heading = heading;
     }
 
-    public Double getBatteryLevel() {
+    public BigDecimal getBatteryLevel() {
         return batteryLevel;
     }
 
-    public void setBatteryLevel(Double batteryLevel) {
+    public void setBatteryLevel(BigDecimal batteryLevel) {
         this.batteryLevel = batteryLevel;
     }
 
-    public Double getTemperature() {
+    public BigDecimal getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(Double temperature) {
+    public void setTemperature(BigDecimal temperature) {
         this.temperature = temperature;
     }
 
-    public Double getVibration() {
+    public BigDecimal getVibration() {
         return vibration;
     }
 
-    public void setVibration(Double vibration) {
+    public void setVibration(BigDecimal vibration) {
         this.vibration = vibration;
     }
 

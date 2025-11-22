@@ -1,45 +1,28 @@
-package ro.utcluj.ssatr.lab3.drone.model;
+package ro.utcluj.ssatr.lab3.drone.dto;
 
-import jakarta.persistence.*;
+import ro.utcluj.ssatr.lab3.drone.model.DroneStatus;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Entity JPA pentru tabela 'drones'.
+ * DTO pentru poziția și starea curentă a unei drone.
+ * Combină date din tabela drones cu telemetria recentă.
  */
-@Entity
-@Table(name = "drones")
-public class Drone {
-
-    @Id
+public class DronePositionDTO {
     private String id;
-
     private String name;
     private String model;
-
-    @Enumerated(EnumType.STRING)
     private DroneStatus status;
-
-    @Column(name = "battery_level", precision = 5, scale = 2)
     private BigDecimal batteryLevel;
-
-    @Column(name = "last_seen")
     private Long lastSeen;
 
-    @OneToMany(mappedBy = "drone", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Mission> missions = new ArrayList<>();
+    // Telemetry data (latest position)
+    private BigDecimal latitude;
+    private BigDecimal longitude;
+    private BigDecimal altitude;
+    private BigDecimal speed;
 
     // Constructors
-    public Drone() {
-    }
-
-    public Drone(String id, String name, String model) {
-        this.id = id;
-        this.name = name;
-        this.model = model;
-        this.status = DroneStatus.IDLE;
-        this.batteryLevel = new BigDecimal("100.00");
+    public DronePositionDTO() {
     }
 
     // Getters and Setters
@@ -91,11 +74,35 @@ public class Drone {
         this.lastSeen = lastSeen;
     }
 
-    public List<Mission> getMissions() {
-        return missions;
+    public BigDecimal getLatitude() {
+        return latitude;
     }
 
-    public void setMissions(List<Mission> missions) {
-        this.missions = missions;
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
+    public BigDecimal getAltitude() {
+        return altitude;
+    }
+
+    public void setAltitude(BigDecimal altitude) {
+        this.altitude = altitude;
+    }
+
+    public BigDecimal getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(BigDecimal speed) {
+        this.speed = speed;
     }
 }

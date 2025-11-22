@@ -10,17 +10,17 @@ import java.util.List;
  * Repository Spring Data JPA pentru Waypoint.
  */
 @Repository
-public interface WaypointRepository extends JpaRepository<Waypoint, Long> {
+public interface WaypointRepository extends JpaRepository<Waypoint, Integer> {
 
     /**
      * Găsește waypoint-urile unei misiuni, sortate după secvență.
      */
-    List<Waypoint> findByMissionIdOrderBySequenceNumberAsc(Long missionId);
+    List<Waypoint> findByMissionIdOrderBySequenceNumberAsc(Integer missionId);
 
     /**
      * Găsește waypoint-urile neatinse pentru o misiune.
      */
-    List<Waypoint> findByMissionIdAndReachedFalse(Long missionId);
+    List<Waypoint> findByMissionIdAndReachedFalse(Integer missionId);
 
     /**
      * TODO: Studenții pot adăuga query-uri pentru:

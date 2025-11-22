@@ -13,7 +13,7 @@ import java.util.List;
  * Repository Spring Data JPA pentru TelemetrySnapshot.
  */
 @Repository
-public interface TelemetryRepository extends JpaRepository<TelemetrySnapshot, Long> {
+public interface TelemetryRepository extends JpaRepository<TelemetrySnapshot, Integer> {
 
     /**
      * Găsește telemetria recentă pentru o dronă, sortată descrescător după timestamp.

@@ -56,6 +56,15 @@ public class TelemetryService {
     }
 
     /**
+     * Obține ultima telemetrie pentru o dronă (cea mai recentă înregistrare).
+     * Folosit pentru a obține poziția curentă a dronei.
+     */
+    public TelemetrySnapshot getLatestTelemetry(String droneId) {
+        List<TelemetrySnapshot> recent = getRecentTelemetry(droneId, 1);
+        return recent.isEmpty() ? null : recent.get(0);
+    }
+
+    /**
      * Actualizează statusul dronei bazat pe telemetrie.
      * Această metodă este apelată de Kafka listener.
      */

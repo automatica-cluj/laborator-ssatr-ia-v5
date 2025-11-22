@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Drone Monitor</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <style>
+        #map {
+            height: 700px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .map-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .drone-popup {
+            font-family: Arial, sans-serif;
+            min-width: 200px;
+        }
+        .drone-popup h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+        .drone-popup p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        .battery-low {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .battery-ok {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .info-panel {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .info-panel h3 {
+            margin: 0 0 1rem 0;
+            color: #2c3e50;
+        }
+        .legend {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .legend-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        .status-flying { background-color: #27ae60; }
+        .status-idle { background-color: #3498db; }
+        .status-landed { background-color: #95a5a6; }
+        .status-emergency { background-color: #e74c3c; }
+        .status-charging { background-color: #f39c12; }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="logo">🚁 Drone Fleet Management</h1>
+            <ul class="nav-menu">
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/drones">Drones</a></li>
+                <li><a href="/missions">Missions</a></li>
+                <li><a href="/monitor" class="active">Live Monitor</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Live Drone Monitor</h1>
+
+        <!-- Info Panel -->
+        <div class="info-panel">
+            <h3>Map Legend</h3>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-icon status-flying"></div>
+                    <span>Flying</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon status-idle"></div>
+                    <span>Idle</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon status-landed"></div>
+                    <span>Landed</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon status-charging"></div>
+                    <span>Charging</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon status-emergency"></div>
+                    <span>Emergency</span>
+                </div>
+            </div>
+            <p style="margin-top: 1rem; color: #7f8c8d; font-size: 0.9rem;">
+                Map updates every 2 seconds. Click on a marker to see drone details.
+            </p>
+        </div>
+
+        <!-- Map Container -->
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Drone Management System - Lab 3 Exercițiul 2</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        // Initialize map centered on Cluj-Napoca
+        const map = L.map('map').setView([46.7712, 23.6236], 13);
+
+        // Add OpenStreetMap tiles (free, no API key needed)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Store drone markers by ID
+        const droneMarkers = {};
+
+        // Define custom icons for different drone states
+        const droneIcons = {
+            FLYING: L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            }),
+            IDLE: L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            }),
+            LANDED: L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            }),
+            CHARGING: L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            }),
+            EMERGENCY: L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            })
+        };
+
+        // Function to create popup HTML
+        function createPopupContent(drone) {
+            const batteryClass = drone.batteryLevel < 20 ? 'battery-low' : 'battery-ok';
+            const batteryValue = drone.batteryLevel ? drone.batteryLevel.toFixed(1) : 'N/A';
+            const altitudeValue = drone.altitude ? drone.altitude.toFixed(2) : 'N/A';
+            const speedValue = drone.speed ? drone.speed.toFixed(2) : 'N/A';
+            const lastSeenDate = drone.lastSeen ? new Date(drone.lastSeen).toLocaleString() : 'Never';
+
+            return `
+                <div class="drone-popup">
+                    <h3>${drone.name}</h3>
+                    <p><strong>ID:</strong> ${drone.id}</p>
+                    <p><strong>Model:</strong> ${drone.model || 'N/A'}</p>
+                    <p><strong>Status:</strong> ${drone.status}</p>
+                    <p><strong>Battery:</strong> <span class="${batteryClass}">${batteryValue}%</span></p>
+                    <p><strong>Altitude:</strong> ${altitudeValue} m</p>
+                    <p><strong>Speed:</strong> ${speedValue} m/s</p>
+                    <p><strong>Last Update:</strong> ${lastSeenDate}</p>
+                    <p style="margin-top: 10px;"><a href="/drones/${drone.id}" style="color: #3498db;">View Details →</a></p>
+                </div>
+            `;
+        }
+
+        // Function to update or create drone marker
+        function updateDroneMarker(drone) {
+            // Skip drones without position data
+            if (!drone.latitude || !drone.longitude) {
+                return;
+            }
+
+            const position = [drone.latitude, drone.longitude];
+            const icon = droneIcons[drone.status] || droneIcons.IDLE;
+
+            if (droneMarkers[drone.id]) {
+                // Update existing marker
+                const currentPos = droneMarkers[drone.id].getLatLng();
+
+                // Only update if position actually changed (avoid unnecessary redraws)
+                if (currentPos.lat !== position[0] || currentPos.lng !== position[1]) {
+                    droneMarkers[drone.id].setLatLng(position);
+                }
+
+                // Update icon and popup
+                droneMarkers[drone.id].setIcon(icon);
+                droneMarkers[drone.id].setPopupContent(createPopupContent(drone));
+            } else {
+                // Create new marker
+                const marker = L.marker(position, { icon: icon })
+                    .addTo(map)
+                    .bindPopup(createPopupContent(drone));
+                droneMarkers[drone.id] = marker;
+
+                // Auto-fit map bounds to show all drones on first load
+                if (Object.keys(droneMarkers).length === 1) {
+                    map.setView(position, 13);
+                }
+            }
+        }
+
+        // Function to remove markers for drones that no longer exist
+        function removeStaleMarkers(currentDroneIds) {
+            Object.keys(droneMarkers).forEach(droneId => {
+                if (!currentDroneIds.includes(droneId)) {
+                    map.removeLayer(droneMarkers[droneId]);
+                    delete droneMarkers[droneId];
+                }
+            });
+        }
+
+        // Polling function to fetch drone positions
+        function pollDronePositions() {
+            fetch('/api/drones/positions')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(drones => {
+                    const currentDroneIds = [];
+
+                    drones.forEach(drone => {
+                        currentDroneIds.push(drone.id);
+                        updateDroneMarker(drone);
+                    });
+
+                    // Remove markers for drones that no longer exist
+                    removeStaleMarkers(currentDroneIds);
+
+                    // Auto-fit map bounds to show all drones (only if there are drones)
+                    if (drones.length > 0 && Object.keys(droneMarkers).length > 1) {
+                        const group = new L.featureGroup(Object.values(droneMarkers));
+                        map.fitBounds(group.getBounds().pad(0.1));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching drone positions:', error);
+                });
+        }
+
+        // Poll every 2 seconds
+        setInterval(pollDronePositions, 2000);
+
+        // Initial load
+        pollDronePositions();
+
+        /*]]>*/
+    </script>
+</body>
+</html>

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ro.utcluj.ssatr.lab3.drone.model.Drone;
 import ro.utcluj.ssatr.lab3.drone.model.DroneStatus;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -27,12 +28,12 @@ public interface DroneRepository extends JpaRepository<Drone, String> {
      * Exemplu de query JPQL custom cu @Query annotation.
      */
     @Query("SELECT d FROM Drone d WHERE d.batteryLevel < :threshold")
-    List<Drone> findLowBatteryDrones(@Param("threshold") Double threshold);
+    List<Drone> findLowBatteryDrones(@Param("threshold") BigDecimal threshold);
 
     /**
      * Găsește drone cu baterie sub un prag, sortate crescător după baterie.
      */
-    List<Drone> findByBatteryLevelLessThanOrderByBatteryLevelAsc(Double threshold);
+    List<Drone> findByBatteryLevelLessThanOrderByBatteryLevelAsc(BigDecimal threshold);
 
     /**
      * TODO: Studenții pot adăuga mai multe query methods:

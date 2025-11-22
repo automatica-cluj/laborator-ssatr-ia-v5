@@ -30,7 +30,7 @@ public class MissionRestController {
      * GET /api/missions/{id} - Obține o misiune după ID.
      */
     @GetMapping("/{id}")
-    public Mission getMission(@PathVariable Long id) {
+    public Mission getMission(@PathVariable Integer id) {
         return missionService.getMissionById(id);
     }
 
@@ -47,7 +47,7 @@ public class MissionRestController {
      * PUT /api/missions/{id} - Actualizează o misiune.
      */
     @PutMapping("/{id}")
-    public Mission updateMission(@PathVariable Long id, @RequestBody Mission mission) {
+    public Mission updateMission(@PathVariable Integer id, @RequestBody Mission mission) {
         return missionService.updateMission(id, mission);
     }
 
@@ -55,7 +55,7 @@ public class MissionRestController {
      * DELETE /api/missions/{id} - Șterge o misiune.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMission(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteMission(@PathVariable Integer id) {
         missionService.deleteMission(id);
         return ResponseEntity.noContent().build();
     }
@@ -80,7 +80,7 @@ public class MissionRestController {
      * POST /api/missions/{id}/start - Pornește o misiune.
      */
     @PostMapping("/{id}/start")
-    public ResponseEntity<String> startMission(@PathVariable Long id) {
+    public ResponseEntity<String> startMission(@PathVariable Integer id) {
         missionService.startMission(id);
         return ResponseEntity.ok("Mission " + id + " started");
     }
@@ -89,7 +89,7 @@ public class MissionRestController {
      * POST /api/missions/{id}/complete - Marchează misiunea ca finalizată.
      */
     @PostMapping("/{id}/complete")
-    public ResponseEntity<String> completeMission(@PathVariable Long id) {
+    public ResponseEntity<String> completeMission(@PathVariable Integer id) {
         missionService.completeMission(id);
         return ResponseEntity.ok("Mission " + id + " completed");
     }
@@ -98,7 +98,7 @@ public class MissionRestController {
      * POST /api/missions/{id}/fail - Marchează misiunea ca eșuată.
      */
     @PostMapping("/{id}/fail")
-    public ResponseEntity<String> failMission(@PathVariable Long id) {
+    public ResponseEntity<String> failMission(@PathVariable Integer id) {
         missionService.failMission(id);
         return ResponseEntity.ok("Mission " + id + " failed");
     }

@@ -1,6 +1,7 @@
 package ro.utcluj.ssatr.lab3.drone.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 /**
  * Entity JPA pentru tabela 'waypoints'.
@@ -11,7 +12,7 @@ public class Waypoint {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mission_id")
@@ -20,9 +21,14 @@ public class Waypoint {
     @Column(name = "sequence_number")
     private Integer sequenceNumber;
 
-    private Double latitude;
-    private Double longitude;
-    private Double altitude;
+    @Column(precision = 10, scale = 7)
+    private BigDecimal latitude;
+
+    @Column(precision = 10, scale = 7)
+    private BigDecimal longitude;
+
+    @Column(precision = 8, scale = 2)
+    private BigDecimal altitude;
 
     private Boolean reached = false;
 
@@ -33,18 +39,18 @@ public class Waypoint {
     public Waypoint() {
     }
 
-    public Waypoint(Double latitude, Double longitude, Double altitude) {
+    public Waypoint(BigDecimal latitude, BigDecimal longitude, BigDecimal altitude) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.altitude = altitude;
     }
 
     // Getters and Setters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -64,27 +70,27 @@ public class Waypoint {
         this.sequenceNumber = sequenceNumber;
     }
 
-    public Double getLatitude() {
+    public BigDecimal getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Double latitude) {
+    public void setLatitude(BigDecimal latitude) {
         this.latitude = latitude;
     }
 
-    public Double getLongitude() {
+    public BigDecimal getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Double longitude) {
+    public void setLongitude(BigDecimal longitude) {
         this.longitude = longitude;
     }
 
-    public Double getAltitude() {
+    public BigDecimal getAltitude() {
         return altitude;
     }
 
-    public void setAltitude(Double altitude) {
+    public void setAltitude(BigDecimal altitude) {
         this.altitude = altitude;
     }
 

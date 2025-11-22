@@ -3,10 +3,15 @@ package ro.utcluj.ssatr.lab3.drone.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ro.utcluj.ssatr.lab3.drone.dto.DronePositionDTO;
+import ro.utcluj.ssatr.lab3.drone.kafka.CommandKafkaProducer;
 import ro.utcluj.ssatr.lab3.drone.model.Drone;
+import ro.utcluj.ssatr.lab3.drone.model.TelemetrySnapshot;
 import ro.utcluj.ssatr.lab3.drone.service.DroneService;
+import ro.utcluj.ssatr.lab3.drone.service.TelemetryService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * REST Controller pentru operații CRUD pe drone.
@@ -17,6 +22,12 @@ public class DroneRestController {
 
     @Autowired
     private DroneService droneService;
+
+    @Autowired
+    private TelemetryService telemetryService;
+
+    @Autowired
+    private CommandKafkaProducer commandKafkaProducer;
 
     /**
      * GET /api/drones - Obține toate drone-urile.
@@ -77,32 +88,80 @@ public class DroneRestController {
 
     /**
      * POST /api/drones/{id}/takeoff - Comandă de decolare.
-     * TODO: Studenții vor implementa trimiterea comenzii prin Kafka.
+     * Trimite comanda prin Kafka către dronă.
      */
     @PostMapping("/{id}/takeoff")
     public ResponseEntity<String> takeoff(@PathVariable String id) {
-        // TODO: Trimite comandă prin Kafka
+        // Verifică dacă drona există
+        Drone drone = droneService.getDroneById(id);
+
+        // Trimite comandă prin Kafka
+        commandKafkaProducer.sendTakeOffCommand(id);
+
         return ResponseEntity.ok("Takeoff command sent to drone " + id);
     }
 
     /**
      * POST /api/drones/{id}/land - Comandă de aterizare.
-     * TODO: Studenții vor implementa trimiterea comenzii prin Kafka.
+     * Trimite comanda prin Kafka către dronă.
      */
     @PostMapping("/{id}/land")
     public ResponseEntity<String> land(@PathVariable String id) {
-        // TODO: Trimite comandă prin Kafka
+        // Verifică dacă drona există
+        Drone drone = droneService.getDroneById(id);
+
+        // Trimite comandă prin Kafka
+        commandKafkaProducer.sendLandCommand(id);
+
         return ResponseEntity.ok("Land command sent to drone " + id);
     }
 
     /**
      * POST /api/drones/{id}/return-home - Comandă return to home.
-     * TODO: Studenții vor implementa.
+     * Trimite comanda prin Kafka către dronă.
      */
     @PostMapping("/{id}/return-home")
     public ResponseEntity<String> returnHome(@PathVariable String id) {
-        // TODO: Trimite comandă prin Kafka
+        // Verifică dacă drona există
+        Drone drone = droneService.getDroneById(id);
+
+        // Trimite comandă prin Kafka
+        commandKafkaProducer.sendReturnHomeCommand(id);
+
         return ResponseEntity.ok("Return home command sent to drone " + id);
+    }
+
+    /**
+     * GET /api/drones/positions - Obține pozițiile curente ale tuturor dronelor.
+     * Combină datele din tabela drones cu telemetria recentă pentru poziție.
+     * Folosit de pagina de monitorizare live pentru a afișa drone-urile pe hartă.
+     */
+    @GetMapping("/positions")
+    public List<DronePositionDTO> getAllDronePositions() {
+        List<Drone> drones = droneService.getAllDrones();
+
+        return drones.stream()
+                .map(drone -> {
+                    DronePositionDTO dto = new DronePositionDTO();
+                    dto.setId(drone.getId());
+                    dto.setName(drone.getName());
+                    dto.setModel(drone.getModel());
+                    dto.setStatus(drone.getStatus());
+                    dto.setBatteryLevel(drone.getBatteryLevel());
+                    dto.setLastSeen(drone.getLastSeen());
+
+                    // Obține ultima telemetrie pentru poziția curentă
+                    TelemetrySnapshot latest = telemetryService.getLatestTelemetry(drone.getId());
+                    if (latest != null) {
+                        dto.setLatitude(latest.getLatitude());
+                        dto.setLongitude(latest.getLongitude());
+                        dto.setAltitude(latest.getAltitude());
+                        dto.setSpeed(latest.getSpeed());
+                    }
+
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     /**

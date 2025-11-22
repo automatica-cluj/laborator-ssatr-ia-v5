@@ -30,7 +30,7 @@ public class MissionService {
     /**
      * Obține o misiune după ID.
      */
-    public Mission getMissionById(Long id) {
+    public Mission getMissionById(Integer id) {
         return missionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mission not found: " + id));
     }
@@ -47,7 +47,7 @@ public class MissionService {
     /**
      * Actualizează o misiune.
      */
-    public Mission updateMission(Long id, Mission missionDetails) {
+    public Mission updateMission(Integer id, Mission missionDetails) {
         Mission mission = getMissionById(id);
         mission.setName(missionDetails.getName());
         mission.setDescription(missionDetails.getDescription());
@@ -58,7 +58,7 @@ public class MissionService {
     /**
      * Șterge o misiune.
      */
-    public void deleteMission(Long id) {
+    public void deleteMission(Integer id) {
         missionRepository.deleteById(id);
     }
 
@@ -89,7 +89,7 @@ public class MissionService {
      * Începe o misiune.
      * TODO: Studenții vor implementa logica de start (trimitere comenzi către dronă).
      */
-    public Mission startMission(Long id) {
+    public Mission startMission(Integer id) {
         Mission mission = getMissionById(id);
         mission.setStatus(MissionStatus.ACTIVE);
         mission.setStartTime(System.currentTimeMillis());
@@ -99,7 +99,7 @@ public class MissionService {
     /**
      * Completează o misiune cu succes.
      */
-    public Mission completeMission(Long id) {
+    public Mission completeMission(Integer id) {
         Mission mission = getMissionById(id);
         mission.setStatus(MissionStatus.COMPLETED);
         mission.setEndTime(System.currentTimeMillis());
@@ -109,7 +109,7 @@ public class MissionService {
     /**
      * Marchează o misiune ca eșuată.
      */
-    public Mission failMission(Long id) {
+    public Mission failMission(Integer id) {
         Mission mission = getMissionById(id);
         mission.setStatus(MissionStatus.FAILED);
         mission.setEndTime(System.currentTimeMillis());

@@ -103,7 +103,7 @@ java -cp target/lab3-exercitiul1-1.0-SNAPSHOT.jar ro.utcluj.ssatr.lab3.analytics
 3. [ ] Toate rapoartele SQL funcționează corect
 4. [ ] Documentație completă în acest README
 
-### Opționale (pentru nota maximă)
+### Opționale
 5. [ ] Simulare misiuni complete (decolare, waypoints, aterizare)
 6. [ ] Batch processing în TelemetryProcessor
 7. [ ] Export CSV în AnalyticsReporter

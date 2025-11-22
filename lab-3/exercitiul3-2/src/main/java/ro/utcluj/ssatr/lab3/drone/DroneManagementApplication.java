@@ -10,6 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class DroneManagementApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DroneManagementApplication.java, args);
+        SpringApplication.run(DroneManagementApplication.class, args);
     }
 }

@@ -7,6 +7,7 @@ import ro.utcluj.ssatr.lab3.drone.model.Drone;
 import ro.utcluj.ssatr.lab3.drone.model.DroneStatus;
 import ro.utcluj.ssatr.lab3.drone.repository.DroneRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -72,7 +73,7 @@ public class DroneService {
      * Obține drone-urile cu baterie scăzută (< 20%).
      */
     public List<Drone> getLowBatteryDrones() {
-        return droneRepository.findLowBatteryDrones(20.0);
+        return droneRepository.findLowBatteryDrones(new BigDecimal("20.0"));
     }
 
     /**
@@ -87,7 +88,7 @@ public class DroneService {
     /**
      * Actualizează nivelul bateriei.
      */
-    public void updateBatteryLevel(String droneId, Double batteryLevel) {
+    public void updateBatteryLevel(String droneId, BigDecimal batteryLevel) {
         Drone drone = getDroneById(droneId);
         drone.setBatteryLevel(batteryLevel);
         drone.setLastSeen(System.currentTimeMillis());
