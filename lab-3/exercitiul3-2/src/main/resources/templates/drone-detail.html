@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Drone Details - ' + ${drone.name}">Drone Details</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="logo">🚁 Drone Fleet Management</h1>
+            <ul class="nav-menu">
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/drones" class="active">Drones</a></li>
+                <li><a href="/missions">Missions</a></li>
+                <li><a href="/monitor">Live Monitor</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Breadcrumb Navigation -->
+        <div style="margin-bottom: 1rem; color: #7f8c8d;">
+            <a href="/" style="color: #3498db; text-decoration: none;">Home</a> /
+            <a href="/drones" style="color: #3498db; text-decoration: none;">Drones</a> /
+            <span th:text="${drone.id}">DRONE-001</span>
+        </div>
+
+        <!-- Drone Header -->
+        <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1 style="margin-bottom: 0.5rem; color: #2c3e50;" th:text="${drone.name}">Alpha</h1>
+                    <p style="color: #7f8c8d; margin-bottom: 0.5rem;">
+                        <strong>ID:</strong> <span th:text="${drone.id}">DRONE-001</span> |
+                        <strong>Model:</strong> <span th:text="${drone.model}">DJI Mavic Pro</span>
+                    </p>
+                    <p style="color: #7f8c8d;">
+                        <strong>Last Seen:</strong>
+                        <span th:text="${drone.lastSeen != null ? #dates.format(new java.util.Date(drone.lastSeen), 'dd-MM-yyyy HH:mm:ss') : 'Never'}">12:34:56</span>
+                    </p>
+                </div>
+                <div style="text-align: right;">
+                    <span class="status-badge"
+                          th:classappend="${drone.status.toString().toLowerCase()}"
+                          th:text="${drone.status}"
+                          style="font-size: 1.1rem; padding: 0.5rem 1.5rem;">IDLE</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🔋</div>
+                <div class="stat-content">
+                    <h3>Battery Level</h3>
+                    <p class="stat-value" th:text="${#numbers.formatDecimal(drone.batteryLevel, 1, 1)} + '%'">85.0%</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📍</div>
+                <div class="stat-content">
+                    <h3>Total Missions</h3>
+                    <p class="stat-value" th:text="${missions.size()}">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <h3>Telemetry Records</h3>
+                    <p class="stat-value" th:text="${recentTelemetry.size()}">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card" th:classappend="${drone.status.toString() == 'FLYING'} ? 'active' : ''">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-content">
+                    <h3>Status</h3>
+                    <p class="stat-value" style="font-size: 1.2rem;" th:text="${drone.status}">IDLE</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Command Control Panel -->
+        <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+            <h2 style="margin-bottom: 1rem; color: #2c3e50;">Command Control</h2>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button class="btn btn-success"
+                        th:data-drone-id="${drone.id}"
+                        onclick="sendCommand(this.dataset.droneId, 'takeoff')">
+                    ✈️ Take Off
+                </button>
+                <button class="btn btn-danger"
+                        th:data-drone-id="${drone.id}"
+                        onclick="sendCommand(this.dataset.droneId, 'land')">
+                    🛬 Land
+                </button>
+                <button class="btn btn-warning"
+                        th:data-drone-id="${drone.id}"
+                        onclick="sendCommand(this.dataset.droneId, 'return-home')">
+                    🏠 Return Home
+                </button>
+                <button class="btn btn-info" onclick="refreshData()">
+                    🔄 Refresh Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Latest Telemetry Info -->
+        <div th:if="${!#lists.isEmpty(recentTelemetry)}"
+             style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+            <h2 style="margin-bottom: 1rem; color: #2c3e50;">Latest Telemetry Snapshot</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div th:with="latest=${recentTelemetry[0]}">
+                    <div style="padding: 1rem; background: #ecf0f1; border-radius: 6px;">
+                        <strong style="color: #7f8c8d;">Position</strong>
+                        <p style="margin-top: 0.5rem;">
+                            <strong>Lat:</strong> <span th:text="${#numbers.formatDecimal(latest.latitude, 1, 6)}">0.000000</span><br>
+                            <strong>Lon:</strong> <span th:text="${#numbers.formatDecimal(latest.longitude, 1, 6)}">0.000000</span><br>
+                            <strong>Alt:</strong> <span th:text="${#numbers.formatDecimal(latest.altitude, 1, 2)} + ' m'">0.00 m</span>
+                        </p>
+                    </div>
+                </div>
+                <div th:with="latest=${recentTelemetry[0]}">
+                    <div style="padding: 1rem; background: #ecf0f1; border-radius: 6px;">
+                        <strong style="color: #7f8c8d;">Flight Data</strong>
+                        <p style="margin-top: 0.5rem;">
+                            <strong>Speed:</strong> <span th:text="${#numbers.formatDecimal(latest.speed, 1, 2)} + ' m/s'">0.00 m/s</span><br>
+                            <strong>Heading:</strong> <span th:text="${latest.heading} + '°'">0°</span><br>
+                            <strong>Battery:</strong> <span th:text="${#numbers.formatDecimal(latest.batteryLevel, 1, 1)} + '%'">100.0%</span>
+                        </p>
+                    </div>
+                </div>
+                <div th:with="latest=${recentTelemetry[0]}">
+                    <div style="padding: 1rem; background: #ecf0f1; border-radius: 6px;">
+                        <strong style="color: #7f8c8d;">Sensors</strong>
+                        <p style="margin-top: 0.5rem;">
+                            <strong>Temp:</strong> <span th:text="${#numbers.formatDecimal(latest.temperature, 1, 1)} + '°C'">25.0°C</span><br>
+                            <strong>Vibration:</strong> <span th:text="${#numbers.formatDecimal(latest.vibration, 1, 4)}">0.0000</span><br>
+                            <strong>Time:</strong> <span th:text="${#dates.format(new java.util.Date(latest.timestamp), 'HH:mm:ss')}">12:34:56</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Missions Section -->
+        <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+            <h2 style="margin-bottom: 1rem; color: #2c3e50;">Associated Missions</h2>
+            <div th:if="${!#lists.isEmpty(missions)}">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Mission Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="mission : ${missions}">
+                            <td th:text="${mission.id}">1</td>
+                            <td th:text="${mission.name}">Patrol Route A</td>
+                            <td th:text="${mission.description}">Patrol mission</td>
+                            <td>
+                                <span class="status-badge"
+                                      th:classappend="${mission.status.toString().toLowerCase()}"
+                                      th:text="${mission.status}">PLANNED</span>
+                            </td>
+                            <td th:text="${mission.startTime != null ? #dates.format(new java.util.Date(mission.startTime), 'dd-MM-yyyy HH:mm') : 'Not started'}">-</td>
+                            <td th:text="${mission.endTime != null ? #dates.format(new java.util.Date(mission.endTime), 'dd-MM-yyyy HH:mm') : 'In progress'}">-</td>
+                            <td>
+                                <button class="btn btn-success"
+                                        th:if="${mission.status.toString() == 'PLANNED'}"
+                                        th:data-mission-id="${mission.id}"
+                                        onclick="startMission(this.dataset.missionId)">
+                                    Start
+                                </button>
+                                <button class="btn btn-danger"
+                                        th:if="${mission.status.toString() == 'ACTIVE'}"
+                                        th:data-mission-id="${mission.id}"
+                                        onclick="completeMission(this.dataset.missionId)">
+                                    Complete
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${#lists.isEmpty(missions)}" style="text-align: center; padding: 2rem; color: #7f8c8d;">
+                No missions assigned to this drone yet.
+            </div>
+        </div>
+
+        <!-- Recent Telemetry History -->
+        <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="margin-bottom: 1rem; color: #2c3e50;">Telemetry History (Last 50 Records)</h2>
+            <div th:if="${!#lists.isEmpty(recentTelemetry)}" style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Latitude</th>
+                            <th>Longitude</th>
+                            <th>Altitude (m)</th>
+                            <th>Speed (m/s)</th>
+                            <th>Heading (°)</th>
+                            <th>Battery (%)</th>
+                            <th>Temp (°C)</th>
+                            <th>Vibration</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="telemetry : ${recentTelemetry}">
+                            <td th:text="${#dates.format(new java.util.Date(telemetry.timestamp), 'dd-MM-yyyy HH:mm:ss')}">12:34:56</td>
+                            <td th:text="${#numbers.formatDecimal(telemetry.latitude, 1, 6)}">0.000000</td>
+                            <td th:text="${#numbers.formatDecimal(telemetry.longitude, 1, 6)}">0.000000</td>
+                            <td th:text="${#numbers.formatDecimal(telemetry.altitude, 1, 2)}">0.00</td>
+                            <td th:text="${#numbers.formatDecimal(telemetry.speed, 1, 2)}">0.00</td>
+                            <td th:text="${telemetry.heading}">0</td>
+                            <td>
+                                <div class="battery-container">
+                                    <div class="battery-bar"
+                                         th:classappend="${telemetry.batteryLevel.compareTo(new java.math.BigDecimal('20')) < 0} ? 'low' : (${telemetry.batteryLevel.compareTo(new java.math.BigDecimal('50')) < 0} ? 'medium' : 'high')">
+                                        <div class="battery-fill"
+                                             th:style="'width: ' + ${telemetry.batteryLevel} + '%'"></div>
+                                    </div>
+                                    <span class="battery-text" th:text="${#numbers.formatDecimal(telemetry.batteryLevel, 1, 1)}">85.0</span>
+                                </div>
+                            </td>
+                            <td th:text="${#numbers.formatDecimal(telemetry.temperature, 1, 1)}">25.0</td>
+                            <td th:text="${#numbers.formatDecimal(telemetry.vibration, 1, 4)}">0.0000</td>
+                            <td>
+                                <span class="status-badge"
+                                      th:classappend="${telemetry.status.toString().toLowerCase()}"
+                                      th:text="${telemetry.status}">IDLE</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:if="${#lists.isEmpty(recentTelemetry)}" style="text-align: center; padding: 2rem; color: #7f8c8d;">
+                No telemetry data available for this drone.
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Drone Management System - Lab 3 Exercițiul 2</p>
+    </footer>
+
+    <script th:inline="javascript">
+        const droneId = /*[[${drone.id}]]*/ 'DRONE-001';
+
+        // Send command to drone via REST API
+        function sendCommand(droneId, command) {
+            const endpoint = `/api/drones/${droneId}/${command}`;
+
+            fetch(endpoint, { method: 'POST' })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    // Refresh page after 1 second to show updated status
+                    setTimeout(() => location.reload(), 1000);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to send command: ' + error);
+                });
+        }
+
+        // Start a mission
+        function startMission(missionId) {
+            fetch(`/api/missions/${missionId}/start`, { method: 'POST' })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to start mission: ' + error);
+                });
+        }
+
+        // Complete a mission
+        function completeMission(missionId) {
+            if (confirm('Mark this mission as completed?')) {
+                fetch(`/api/missions/${missionId}/complete`, { method: 'POST' })
+                    .then(response => response.text())
+                    .then(data => {
+                        alert(data);
+                        location.reload();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Failed to complete mission: ' + error);
+                    });
+            }
+        }
+
+        // Refresh data without full page reload
+        function refreshData() {
+            location.reload();
+        }
+
+        // Auto-refresh telemetry every 10 seconds (optional)
+        // setInterval(refreshData, 10000);
+    </script>
+</body>
+</html>
