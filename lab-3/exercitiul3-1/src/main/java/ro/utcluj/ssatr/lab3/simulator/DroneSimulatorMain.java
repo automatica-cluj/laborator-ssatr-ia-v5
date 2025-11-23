@@ -24,7 +24,7 @@ public class DroneSimulatorMain {
 //        drones.add(new DroneSimulator("DRONE-003", 46.7680, 23.6200, 2));
 //        drones.add(new DroneSimulator("DRONE-004", 46.7800, 23.6300, 4));
 //        drones.add(new DroneSimulator("DRONE-005", 46.7650, 23.6180, 3));
-
+        drones.add(new DroneSimulator("DRONE-006", 46.7650, 23.6180, 3));
         // Pornim toate drone-urile
         for (DroneSimulator drone : drones) {
             drone.start();

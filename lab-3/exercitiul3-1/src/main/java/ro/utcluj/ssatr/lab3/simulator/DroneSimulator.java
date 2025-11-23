@@ -10,8 +10,13 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.utcluj.ssatr.lab3.model.TelemetryData;
+import ro.utcluj.ssatr.lab3.utils.DatabaseUtils;
 import ro.utcluj.ssatr.lab3.utils.KafkaUtils;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Random;
@@ -71,7 +76,78 @@ public class DroneSimulator {
         this.status = "IDLE";
         this.temperature = 20.0 + random.nextDouble() * 5.0;
 
+        // Înregistrează drona în baza de date
+        registerDroneInDatabase();
+
         logger.info("Drone {} initialized at ({}, {})", droneId, startLat, startLon);
+    }
+
+    /**
+     * Înregistrează drona în tabela drones din PostgreSQL.
+     * Dacă drona există deja, actualizează doar statusul și battery level.
+     */
+    private void registerDroneInDatabase() {
+        try (Connection conn = DatabaseUtils.getConnection()) {
+            // Verifică dacă drona există deja
+            String checkSql = "SELECT id FROM drones WHERE id = ?";
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+                checkStmt.setString(1, droneId);
+                ResultSet rs = checkStmt.executeQuery();
+
+                if (rs.next()) {
+                    // Drona există - actualizează statusul și bateria
+                    String updateSql = "UPDATE drones SET status = ?, battery_level = ?, last_seen = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+                    try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                        updateStmt.setString(1, status);
+                        updateStmt.setDouble(2, batteryLevel);
+                        updateStmt.setLong(3, System.currentTimeMillis());
+                        updateStmt.setString(4, droneId);
+                        updateStmt.executeUpdate();
+                        logger.info("Drone {} updated in database (status: {}, battery: {}%)", droneId, status, batteryLevel);
+                    }
+                } else {
+                    // Drona nu există - inserează înregistrare nouă
+                    String insertSql = "INSERT INTO drones (id, name, model, status, battery_level, last_seen) VALUES (?, ?, ?, ?, ?, ?)";
+                    try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+                        insertStmt.setString(1, droneId);
+                        insertStmt.setString(2, generateDroneName(droneId));
+                        insertStmt.setString(3, generateDroneModel());
+                        insertStmt.setString(4, status);
+                        insertStmt.setDouble(5, batteryLevel);
+                        insertStmt.setLong(6, System.currentTimeMillis());
+                        insertStmt.executeUpdate();
+                        logger.info("Drone {} registered in database (name: {}, model: {})",
+                                  droneId, generateDroneName(droneId), generateDroneModel());
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Failed to register drone {} in database", droneId, e);
+        }
+    }
+
+    /**
+     * Generează un nume pentru dronă bazat pe ID.
+     */
+    private String generateDroneName(String droneId) {
+        String[] names = {"Alpha", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel"};
+        int index = Math.abs(droneId.hashCode()) % names.length;
+        return names[index];
+    }
+
+    /**
+     * Generează un model aleator pentru dronă.
+     */
+    private String generateDroneModel() {
+        String[] models = {
+            "DJI Mavic 3 Pro",
+            "DJI Phantom 4 Pro",
+            "Autel EVO II",
+            "Parrot Anafi",
+            "Skydio 2+",
+            "Yuneec Typhoon H3"
+        };
+        return models[random.nextInt(models.length)];
     }
 
     /**
