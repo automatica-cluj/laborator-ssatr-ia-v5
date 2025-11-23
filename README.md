@@ -28,6 +28,20 @@ Repository pentru laboratoarele materiei **Sisteme Software Avansate în Timp Re
 1. Sistem IoT cu Arhitectură de Timp Real - senzori prioritizați și controleri stratificați
 2. Sistem de Livrare cu Distribuție și Confirmare Comenzi - pattern fanout și notificări
 
+### [Laborator 3 - Kafka & Baze de Date Relaționale](lab-3/readme.md)
+
+**Obiective:**
+- Lucrul cu Apache Kafka pentru streaming de date în timp real
+- Persistența datelor în baze de date relaționale (PostgreSQL)
+- Comparație între abordări low-level (JDBC, Kafka API) și high-level (Spring Data JPA, Spring Kafka)
+- Dezvoltare aplicații web cu Spring Boot și Thymeleaf
+- Arhitecturi event-driven distribuite
+
+**Exerciții:**
+1. Testare Simulator Drone (low-level) - JDBC manual, Kafka Producer/Consumer API direct, management thread-uri
+2. Testare Aplicație Web Management Drone - Spring Boot, JPA, REST API, interfață web cu Thymeleaf și Leaflet.js
+3. Implementarea a Sistemului Mission Control 
+
 ## Resurse
 
 - **Documentație:** Fiecare laborator are ghid detaliat de lucru
