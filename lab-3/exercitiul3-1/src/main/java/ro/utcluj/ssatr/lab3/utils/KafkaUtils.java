@@ -12,7 +12,7 @@ import java.util.Properties;
  */
 public class KafkaUtils {
 
-    public static final String BOOTSTRAP_SERVERS = "localhost:9092";
+    public static final String BOOTSTRAP_SERVERS = "control.aut.utcluj.ro:9092";
     public static final String TOPIC_TELEMETRY = "drone-telemetry";
     public static final String TOPIC_COMMANDS = "drone-commands";
     public static final String TOPIC_EVENTS = "drone-events";
