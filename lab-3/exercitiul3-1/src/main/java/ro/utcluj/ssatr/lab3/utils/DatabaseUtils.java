@@ -16,6 +16,7 @@ public class DatabaseUtils {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseUtils.class);
 
     private static final String DB_URL = "jdbc:postgresql://control.aut.utcluj.ro:5432/dronedb";
+    //private static final String DB_URL = "jdbc:postgresql://localhost:5432/dronedb";
     private static final String DB_USER = "postgres";
     private static final String DB_PASSWORD = "postgres";
 

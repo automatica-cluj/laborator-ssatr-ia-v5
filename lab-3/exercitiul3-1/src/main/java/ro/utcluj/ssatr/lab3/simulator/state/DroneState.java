@@ -90,7 +90,7 @@ public class DroneState {
      */
     public synchronized void updateMotion(double speed, int heading) {
         this.speed = speed;
-        this.heading = heading % 360; // Normalize to 0-359
+        this.heading = ((heading % 360) + 360) % 360; // Normalize to 0-359, handling negatives
     }
 
     /**
@@ -194,7 +194,8 @@ public class DroneState {
     }
 
     public void setHeading(int heading) {
-        this.heading = heading % 360;
+        // Normalize heading to 0-359 range, handling negative values
+        this.heading = ((heading % 360) + 360) % 360;
     }
 
     public double getHomeLat() {
