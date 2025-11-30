@@ -72,6 +72,79 @@
         .status-landed { background-color: #95a5a6; }
         .status-emergency { background-color: #e74c3c; }
         .status-charging { background-color: #f39c12; }
+
+        .drone-selection-panel {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .drone-selection-panel h3 {
+            margin: 0 0 1rem 0;
+            color: #2c3e50;
+        }
+        .drone-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        .drone-checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .drone-checkbox-item:hover {
+            background-color: #f8f9fa;
+        }
+        .drone-checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .drone-checkbox-label {
+            cursor: pointer;
+            user-select: none;
+            flex: 1;
+        }
+        .drone-checkbox-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .selection-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .selection-controls button {
+            padding: 0.5rem 1rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+        .selection-controls button:hover {
+            background-color: #2980b9;
+        }
+        .selection-controls button:active {
+            transform: translateY(1px);
+        }
+        .no-drones-message {
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 1rem;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -91,6 +164,18 @@
     <!-- Main Content -->
     <div class="container">
         <h1>Live Drone Monitor</h1>
+
+        <!-- Drone Selection Panel -->
+        <div class="drone-selection-panel">
+            <h3>Select Drones to Display</h3>
+            <div class="selection-controls">
+                <button onclick="selectAllDrones()">Select All</button>
+                <button onclick="deselectAllDrones()">Deselect All</button>
+            </div>
+            <div id="drone-checkboxes" class="drone-checkboxes">
+                <div class="no-drones-message">Loading drones...</div>
+            </div>
+        </div>
 
         <!-- Info Panel -->
         <div class="info-panel">
@@ -149,6 +234,15 @@
 
         // Store drone markers by ID
         const droneMarkers = {};
+
+        // Store selected drone IDs
+        const selectedDroneIds = new Set();
+
+        // Store all available drones
+        let allDrones = [];
+
+        // Track if checkboxes have been initialized
+        let checkboxesInitialized = false;
 
         // Define custom icons for different drone states
         const droneIcons = {
@@ -217,10 +311,125 @@
             `;
         }
 
+        // Function to get status indicator color
+        function getStatusColor(status) {
+            const colorMap = {
+                'FLYING': '#27ae60',
+                'IDLE': '#3498db',
+                'LANDED': '#95a5a6',
+                'CHARGING': '#f39c12',
+                'EMERGENCY': '#e74c3c'
+            };
+            return colorMap[status] || '#95a5a6';
+        }
+
+        // Function to update drone checkboxes
+        function updateDroneCheckboxes(drones) {
+            const container = document.getElementById('drone-checkboxes');
+
+            if (drones.length === 0) {
+                container.innerHTML = '<div class="no-drones-message">No drones available</div>';
+                checkboxesInitialized = false;
+                return;
+            }
+
+            // Sort drones by ID to maintain consistent order
+            const sortedDrones = [...drones].sort((a, b) => {
+                if (typeof a.id === 'string' && typeof b.id === 'string') {
+                    return a.id.localeCompare(b.id);
+                }
+                return String(a.id).localeCompare(String(b.id));
+            });
+
+            // Only rebuild HTML if checkboxes haven't been initialized yet
+            // or if the drone list has changed (new drones added/removed)
+            const currentDroneIds = sortedDrones.map(d => d.id).join(',');
+            const existingCheckboxes = container.querySelectorAll('input[type="checkbox"]');
+            const existingDroneIds = Array.from(existingCheckboxes).map(cb => cb.value).join(',');
+
+            if (!checkboxesInitialized || currentDroneIds !== existingDroneIds) {
+                // Get current selections
+                const currentSelections = new Set(selectedDroneIds);
+
+                // Build HTML
+                let html = '';
+                sortedDrones.forEach(drone => {
+                    const isChecked = currentSelections.has(drone.id) ? 'checked' : '';
+                    const statusColor = getStatusColor(drone.status);
+                    const droneName = drone.name || drone.id;
+                    html += `
+                        <div class="drone-checkbox-item">
+                            <input type="checkbox"
+                                   id="drone-${drone.id}"
+                                   value="${drone.id}"
+                                   ${isChecked}
+                                   onchange="toggleDroneSelection(this)">
+                            <label for="drone-${drone.id}" class="drone-checkbox-label">
+                                ${droneName}
+                            </label>
+                            <div class="drone-checkbox-status" style="background-color: ${statusColor};"></div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+                checkboxesInitialized = true;
+            } else {
+                // Just update the status indicators without rebuilding
+                sortedDrones.forEach(drone => {
+                    const checkbox = document.getElementById(`drone-${drone.id}`);
+                    if (checkbox && checkbox.parentElement) {
+                        const statusIndicator = checkbox.parentElement.querySelector('.drone-checkbox-status');
+                        if (statusIndicator) {
+                            statusIndicator.style.backgroundColor = getStatusColor(drone.status);
+                        }
+                    }
+                });
+            }
+        }
+
+        // Function to toggle drone selection
+        function toggleDroneSelection(checkbox) {
+            const droneId = checkbox.value;
+            if (checkbox.checked) {
+                selectedDroneIds.add(droneId);
+            } else {
+                selectedDroneIds.delete(droneId);
+            }
+            updateMapDisplay();
+        }
+
+        // Function to select all drones
+        function selectAllDrones() {
+            allDrones.forEach(drone => selectedDroneIds.add(drone.id));
+            document.querySelectorAll('#drone-checkboxes input[type="checkbox"]').forEach(cb => {
+                cb.checked = true;
+            });
+            updateMapDisplay();
+        }
+
+        // Function to deselect all drones
+        function deselectAllDrones() {
+            selectedDroneIds.clear();
+            document.querySelectorAll('#drone-checkboxes input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+            updateMapDisplay();
+        }
+
         // Function to update or create drone marker
         function updateDroneMarker(drone) {
             // Skip drones without position data
             if (!drone.latitude || !drone.longitude) {
+                return;
+            }
+
+            // Check if drone is selected
+            if (!selectedDroneIds.has(drone.id)) {
+                // Remove marker if it exists
+                if (droneMarkers[drone.id]) {
+                    map.removeLayer(droneMarkers[drone.id]);
+                    delete droneMarkers[drone.id];
+                }
                 return;
             }
 
@@ -253,6 +462,35 @@
             }
         }
 
+        // Function to update map display based on selected drones
+        function updateMapDisplay() {
+            // Remove markers for unselected drones
+            Object.keys(droneMarkers).forEach(droneId => {
+                if (!selectedDroneIds.has(droneId)) {
+                    map.removeLayer(droneMarkers[droneId]);
+                    delete droneMarkers[droneId];
+                }
+            });
+
+            // Update markers for selected drones
+            allDrones.forEach(drone => {
+                if (selectedDroneIds.has(drone.id)) {
+                    updateDroneMarker(drone);
+                }
+            });
+
+            // Auto-fit map bounds to show selected drones
+            const selectedMarkers = Object.values(droneMarkers);
+            if (selectedMarkers.length > 0) {
+                if (selectedMarkers.length === 1) {
+                    map.setView(selectedMarkers[0].getLatLng(), 13);
+                } else {
+                    const group = new L.featureGroup(selectedMarkers);
+                    map.fitBounds(group.getBounds().pad(0.1));
+                }
+            }
+        }
+
         // Function to remove markers for drones that no longer exist
         function removeStaleMarkers(currentDroneIds) {
             Object.keys(droneMarkers).forEach(droneId => {
@@ -275,19 +513,26 @@
                 .then(drones => {
                     const currentDroneIds = [];
 
+                    // Store drones data
+                    allDrones = drones;
+
+                    // Update checkboxes (preserve selections)
+                    const isFirstLoad = selectedDroneIds.size === 0 && drones.length > 0;
+                    updateDroneCheckboxes(drones);
+
+                    // On first load, don't select any drones by default
+                    // User must explicitly select which drones to display
+
                     drones.forEach(drone => {
                         currentDroneIds.push(drone.id);
-                        updateDroneMarker(drone);
+                        // Only update marker if drone is selected
+                        if (selectedDroneIds.has(drone.id)) {
+                            updateDroneMarker(drone);
+                        }
                     });
 
                     // Remove markers for drones that no longer exist
                     removeStaleMarkers(currentDroneIds);
-
-                    // Auto-fit map bounds to show all drones (only if there are drones)
-                    if (drones.length > 0 && Object.keys(droneMarkers).length > 1) {
-                        const group = new L.featureGroup(Object.values(droneMarkers));
-                        map.fitBounds(group.getBounds().pad(0.1));
-                    }
                 })
                 .catch(error => {
                     console.error('Error fetching drone positions:', error);
