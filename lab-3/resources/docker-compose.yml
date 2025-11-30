@@ -51,8 +51,8 @@ services:
     container_name: postgres
     environment:
       POSTGRES_DB: dronedb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: drone_admin
+      POSTGRES_PASSWORD: Dr0n3Fl33t#2024!Secure
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
@@ -62,7 +62,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U drone_admin"]
       interval: 10s
       timeout: 5s
       retries: 5

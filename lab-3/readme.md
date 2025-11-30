@@ -89,7 +89,7 @@ Ar trebui să vedeți 4 containere pornite:
 #### PostgreSQL
 ```bash
 # Conectați-vă la PostgreSQL
-docker exec -it postgres psql -U postgres -d dronedb
+docker exec -it postgres psql -U drone_admin -d dronedb
 
 # Verificați tabelele
 \dt

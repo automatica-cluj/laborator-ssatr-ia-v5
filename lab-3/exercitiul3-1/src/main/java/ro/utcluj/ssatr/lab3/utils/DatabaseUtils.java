@@ -17,8 +17,8 @@ public class DatabaseUtils {
 
     private static final String DB_URL = "jdbc:postgresql://control.aut.utcluj.ro:5432/dronedb";
     //private static final String DB_URL = "jdbc:postgresql://localhost:5432/dronedb";
-    private static final String DB_USER = "postgres";
-    private static final String DB_PASSWORD = "postgres";
+    private static final String DB_USER = "drone_admin";
+    private static final String DB_PASSWORD = "Dr0n3Fl33t#2024!Secure";
 
     private static HikariDataSource dataSource;
 
