@@ -51,12 +51,12 @@ public class DroneSimulatorMain {
 //        }).start();
 
         // Shutdown hook pentru oprire curată
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            logger.info("Shutting down all drones...");
-            for (DroneSimulator drone : drones) {
-                drone.stop();
-            }
-        }));
+//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//            logger.info("Shutting down all drones...");
+//            for (DroneSimulator drone : drones) {
+//                drone.stop();
+//            }
+//        }));
 
         logger.info("Drone Simulator Application started. Press Ctrl+C to stop.");
     }
