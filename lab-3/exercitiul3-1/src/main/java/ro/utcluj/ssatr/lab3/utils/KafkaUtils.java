@@ -4,7 +4,11 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -12,11 +16,39 @@ import java.util.Properties;
  */
 public class KafkaUtils {
 
-    public static final String BOOTSTRAP_SERVERS = "control.aut.utcluj.ro:9092";
-    //public static final String BOOTSTRAP_SERVERS = "localhost:9092";
-    public static final String TOPIC_TELEMETRY = "drone-telemetry";
-    public static final String TOPIC_COMMANDS = "drone-commands";
-    public static final String TOPIC_EVENTS = "drone-events";
+    private static final Logger logger = LoggerFactory.getLogger(KafkaUtils.class);
+    private static final Properties config = new Properties();
+
+    public static final String BOOTSTRAP_SERVERS;
+    public static final String TOPIC_TELEMETRY;
+    public static final String TOPIC_COMMANDS;
+    public static final String TOPIC_EVENTS;
+
+    static {
+        try {
+            loadConfiguration();
+            BOOTSTRAP_SERVERS = config.getProperty("kafka.bootstrap.servers");
+            TOPIC_TELEMETRY = config.getProperty("kafka.topic.telemetry");
+            TOPIC_COMMANDS = config.getProperty("kafka.topic.commands");
+            TOPIC_EVENTS = config.getProperty("kafka.topic.events");
+            logger.info("Kafka configuration loaded successfully");
+        } catch (IOException e) {
+            logger.error("Failed to load Kafka configuration", e);
+            throw new RuntimeException("Kafka configuration initialization failed", e);
+        }
+    }
+
+    /**
+     * Încarcă configurația din fișierul application.properties.
+     */
+    private static void loadConfiguration() throws IOException {
+        try (InputStream input = KafkaUtils.class.getClassLoader().getResourceAsStream("application.properties")) {
+            if (input == null) {
+                throw new IOException("Unable to find application.properties");
+            }
+            config.load(input);
+        }
+    }
 
     /**
      * Creează Properties pentru Kafka Producer.
@@ -29,11 +61,11 @@ public class KafkaUtils {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
-        // Configurații opționale pentru performanță și reliabilitate
-        props.put(ProducerConfig.ACKS_CONFIG, "1"); // Așteaptă confirmarea de la leader
-        props.put(ProducerConfig.RETRIES_CONFIG, 3); // Reîncearcă 3 ori în caz de eroare
-        props.put(ProducerConfig.LINGER_MS_CONFIG, 10); // Așteaptă 10ms pentru batching
-        props.put(ProducerConfig.BATCH_SIZE_CONFIG, 16384); // Batch size în bytes
+        // Configurații opționale pentru performanță și reliabilitate din properties
+        props.put(ProducerConfig.ACKS_CONFIG, config.getProperty("kafka.producer.acks", "1"));
+        props.put(ProducerConfig.RETRIES_CONFIG, Integer.parseInt(config.getProperty("kafka.producer.retries", "3")));
+        props.put(ProducerConfig.LINGER_MS_CONFIG, Integer.parseInt(config.getProperty("kafka.producer.linger.ms", "10")));
+        props.put(ProducerConfig.BATCH_SIZE_CONFIG, Integer.parseInt(config.getProperty("kafka.producer.batch.size", "16384")));
 
         return props;
     }
@@ -51,13 +83,13 @@ public class KafkaUtils {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 
-        // Configurații offset management
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest"); // Citește doar mesajele noi
-        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); // Dezactivăm auto-commit pentru control manual
+        // Configurații offset management din properties
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, config.getProperty("kafka.consumer.auto.offset.reset", "latest"));
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, config.getProperty("kafka.consumer.enable.auto.commit", "false"));
 
-        // Configurații polling
-        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100); // Maxim 100 mesaje per poll
-        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 30000); // 30 secunde
+        // Configurații polling din properties
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, Integer.parseInt(config.getProperty("kafka.consumer.max.poll.records", "100")));
+        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, Integer.parseInt(config.getProperty("kafka.consumer.session.timeout.ms", "30000")));
 
         return props;
     }

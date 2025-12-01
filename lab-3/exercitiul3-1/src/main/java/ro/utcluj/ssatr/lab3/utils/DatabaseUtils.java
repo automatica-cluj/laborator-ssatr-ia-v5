@@ -5,8 +5,11 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * Utility class pentru gestionarea conexiunilor la baza de date PostgreSQL.
@@ -15,15 +18,12 @@ import java.sql.SQLException;
 public class DatabaseUtils {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseUtils.class);
 
-    private static final String DB_URL = "jdbc:postgresql://control.aut.utcluj.ro:5432/dronedb";
-    //private static final String DB_URL = "jdbc:postgresql://localhost:5432/dronedb";
-    private static final String DB_USER = "drone_admin";
-    private static final String DB_PASSWORD = "Dr0n3Fl33t#2024!Secure";
-
+    private static final Properties config = new Properties();
     private static HikariDataSource dataSource;
 
     static {
         try {
+            loadConfiguration();
             initializeDataSource();
             logger.info("Database connection pool initialized successfully");
         } catch (Exception e) {
@@ -33,28 +33,43 @@ public class DatabaseUtils {
     }
 
     /**
+     * Încarcă configurația din fișierul application.properties.
+     */
+    private static void loadConfiguration() throws IOException {
+        try (InputStream input = DatabaseUtils.class.getClassLoader().getResourceAsStream("application.properties")) {
+            if (input == null) {
+                throw new IOException("Unable to find application.properties");
+            }
+            config.load(input);
+            logger.info("Configuration loaded successfully from application.properties");
+        }
+    }
+
+    /**
      * Inițializează connection pool-ul HikariCP.
      */
     private static void initializeDataSource() {
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(DB_URL);
-        config.setUsername(DB_USER);
-        config.setPassword(DB_PASSWORD);
+        HikariConfig hikariConfig = new HikariConfig();
 
-        // Configurări HikariCP
-        config.setMaximumPoolSize(10);
-        config.setMinimumIdle(2);
-        config.setConnectionTimeout(30000); // 30 seconds
-        config.setIdleTimeout(600000); // 10 minutes
-        config.setMaxLifetime(1800000); // 30 minutes
+        // Configurări conexiune
+        hikariConfig.setJdbcUrl(config.getProperty("db.url"));
+        hikariConfig.setUsername(config.getProperty("db.username"));
+        hikariConfig.setPassword(config.getProperty("db.password"));
+
+        // Configurări HikariCP din properties
+        hikariConfig.setMaximumPoolSize(Integer.parseInt(config.getProperty("db.pool.maximumPoolSize", "10")));
+        hikariConfig.setMinimumIdle(Integer.parseInt(config.getProperty("db.pool.minimumIdle", "2")));
+        hikariConfig.setConnectionTimeout(Long.parseLong(config.getProperty("db.pool.connectionTimeout", "30000")));
+        hikariConfig.setIdleTimeout(Long.parseLong(config.getProperty("db.pool.idleTimeout", "600000")));
+        hikariConfig.setMaxLifetime(Long.parseLong(config.getProperty("db.pool.maxLifetime", "1800000")));
 
         // Pool name
-        config.setPoolName("DroneDB-Pool");
+        hikariConfig.setPoolName(config.getProperty("db.pool.poolName", "DroneDB-Pool"));
 
         // Connection test query
-        config.setConnectionTestQuery("SELECT 1");
+        hikariConfig.setConnectionTestQuery(config.getProperty("db.pool.connectionTestQuery", "SELECT 1"));
 
-        dataSource = new HikariDataSource(config);
+        dataSource = new HikariDataSource(hikariConfig);
     }
 
     /**
