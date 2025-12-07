@@ -10,6 +10,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class DroneManagementApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DroneManagementApplication.class, args);
+         //Option 1: Uncomment to use custom profile (remote server)
+         SpringApplication app = new SpringApplication(DroneManagementApplication.class);
+         app.setAdditionalProfiles("custom");
+         app.run(args);
+
+        // Option 2: Default - uses application.properties (local/current config)
+        //SpringApplication.run(DroneManagementApplication.class, args);
     }
 }
