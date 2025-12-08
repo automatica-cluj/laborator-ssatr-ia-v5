@@ -19,7 +19,8 @@ public class DroneSimulatorMain {
         List<DroneSimulator> drones = new ArrayList<>();
 
         // Creăm 5 drone cu poziții inițiale diferite (Cluj-Napoca area)
-          drones.add(new DroneSimulator("DRONE-ABC", 46.7712, 23.6236, 2));
+          drones.add(new DroneSimulator("DRONE-Mihai", 46.7712, 23.6236, 2));
+          drones.add(new DroneSimulator("DRONE-Mihai2", 46.7712, 23.6236, 2));
 //        drones.add(new DroneSimulator("Mihai-DR-00X", 46.7750, 23.6350, 3));
 //        drones.add(new DroneSimulator("DRONE-002", 46.7680, 23.6200, 2));
 //        drones.add(new DroneSimulator("DRONE-004", 46.7800, 23.6300, 4));
@@ -27,7 +28,7 @@ public class DroneSimulatorMain {
 //        drones.add(new DroneSimulator("DRONE-006", 46.7650, 23.6380, 3));
 //        drones.add(new DroneSimulator("DRONE-DE-001", 52.5200, 13.4050, 3));
         // Somewhere in the United States (Chicago)
-//        drones.add(new DroneSimulator("ANDREI-DRONE-01", 41.8781, -87.6298, 3));
+        drones.add(new DroneSimulator("ANDREI-DRONE-01", 41.8781, -87.6298, 3));
 
         // Pornim toate drone-urile
         for (DroneSimulator drone : drones) {
