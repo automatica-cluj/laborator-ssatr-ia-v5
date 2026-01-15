@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missions - Fleet Management</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="logo">🚁 Drone Fleet Management</h1>
+            <ul class="nav-menu">
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/drones">Drones</a></li>
+                <li><a href="/missions" class="active">Missions</a></li>
+                <li><a href="/monitor">Live Monitor</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="header-actions">
+            <h1>Missions</h1>
+            <a href="/missions/create" class="btn btn-primary">Create Mission</a>
+        </div>
+
+        <!-- Missions Table -->
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Mission ID</th>
+                        <th>Drone ID</th>
+                        <th>Status</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="mission : ${missions}">
+                        <td th:text="${mission.id}">MISSION-001</td>
+                        <td th:text="${mission.drone != null ? mission.drone.id : 'N/A'}">DRONE-001</td>
+                        <td>
+                            <span class="status-badge"
+                                  th:classappend="${mission.status.toString().toLowerCase()}"
+                                  th:text="${mission.status}">IN_PROGRESS</span>
+                        </td>
+                        <td th:text="${mission.startTime != null ? #dates.format(mission.startTime, 'dd-MM-yyyy HH:mm:ss') : 'N/A'}">01-01-2024 12:00:00</td>
+                        <td th:text="${mission.endTime != null ? #dates.format(mission.endTime, 'dd-MM-yyyy HH:mm:ss') : 'N/A'}">01-01-2024 13:00:00</td>
+                        <td class="actions-cell">
+                            <a th:href="@{/missions/{id}(id=${mission.id})}" class="btn btn-info">Details</a>
+                            <a th:href="@{/missions/delete/{id}(id=${mission.id})}" class="btn btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(missions)}">
+                        <td colspan="6" style="text-align: center; padding: 2rem;">
+                            No missions found. Please create a new mission.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <p>Drone Management System - Lab 3 Exercițiul 2</p>
+    </footer>
+</body>
+</html>

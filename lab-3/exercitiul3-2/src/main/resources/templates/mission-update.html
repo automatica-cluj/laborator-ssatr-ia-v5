@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Mission - Fleet Management</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="logo">🚁 Drone Fleet Management</h1>
+            <ul class="nav-menu">
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/drones">Drones</a></li>
+                <li><a href="/missions" class="active">Missions</a></li>
+                <li><a href="/monitor">Live Monitor</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="header-actions">
+            <h1>Update Mission</h1>
+        </div>
+
+        <!-- Update Mission Form -->
+        <div class="form-container">
+            <form th:action="@{/missions/update/{id}(id=${mission.id})}" th:object="${mission}" method="post">
+                <div class="form-group">
+                    <label for="name">Mission Name</label>
+                    <input type="text" id="name" name="name" th:field="*{name}" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" th:field="*{description}"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="drone">Assign Drone</label>
+                    <select id="drone" name="droneId">
+                        <option value="">Select a drone</option>
+                        <option th:each="drone : ${drones}"
+                                th:value="${drone.id}"
+                                th:text="${drone.name} + ' (' + ${drone.id} + ')'"
+                                th:selected="${mission.drone != null && mission.drone.id == drone.id}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" name="status" th:field="*{status}">
+                        <option th:each="status : ${T(ro.utcluj.ssatr.lab3.drone.model.MissionStatus).values()}"
+                                th:value="${status}"
+                                th:text="${status}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <h2>Waypoints</h2>
+                    <div id="waypoints-container">
+                        <div th:each="waypoint, iterStat : *{waypoints}" class="waypoint-group">
+                            <input type="hidden" th:name="'waypoints[' + ${iterStat.index} + '].id'" th:value="${waypoint.id}" />
+                            <div class="form-group">
+                                <label>Latitude</label>
+                                <input type="number" step="any" th:name="'waypoints[' + ${iterStat.index} + '].latitude'" th:value="${waypoint.latitude}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Longitude</label>
+                                <input type="number" step="any" th:name="'waypoints[' + ${iterStat.index} + '].longitude'" th:value="${waypoint.longitude}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Altitude</label>
+                                <input type="number" step="any" th:name="'waypoints[' + ${iterStat.index} + '].altitude'" th:value="${waypoint.altitude}" required>
+                            </div>
+                            <button type="button" class="btn btn-danger remove-waypoint">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" id="add-waypoint" class="btn btn-secondary">Add Waypoint</button>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Update Mission</button>
+                    <a th:href="@{/missions/{id}(id=${mission.id})}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>Drone Management System - Lab 3 Exercițiul 2</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const waypointsContainer = document.getElementById('waypoints-container');
+            const addWaypointButton = document.getElementById('add-waypoint');
+            let waypointIndex = document.querySelectorAll('.waypoint-group').length;
+
+            addWaypointButton.addEventListener('click', function () {
+                const waypointDiv = document.createElement('div');
+                waypointDiv.classList.add('waypoint-group');
+                waypointDiv.innerHTML = `
+                    <input type="hidden" name="waypoints[${waypointIndex}].id" value="" />
+                    <div class="form-group">
+                        <label>Latitude</label>
+                        <input type="number" step="any" name="waypoints[${waypointIndex}].latitude" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Longitude</label>
+                        <input type="number" step="any" name="waypoints[${waypointIndex}].longitude" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Altitude</label>
+                        <input type="number" step="any" name="waypoints[${waypointIndex}].altitude" required>
+                    </div>
+                    <button type="button" class="btn btn-danger remove-waypoint">Remove</button>
+                `;
+                waypointsContainer.appendChild(waypointDiv);
+                waypointIndex++;
+            });
+
+            waypointsContainer.addEventListener('click', function (e) {
+                if (e.target.classList.contains('remove-waypoint')) {
+                    e.target.parentElement.remove();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

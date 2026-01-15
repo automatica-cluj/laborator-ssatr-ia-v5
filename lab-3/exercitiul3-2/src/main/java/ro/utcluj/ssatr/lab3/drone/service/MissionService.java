@@ -52,6 +52,12 @@ public class MissionService {
         mission.setName(missionDetails.getName());
         mission.setDescription(missionDetails.getDescription());
         mission.setStatus(missionDetails.getStatus());
+        mission.setDrone(missionDetails.getDrone());
+
+        mission.getWaypoints().clear();
+        mission.getWaypoints().addAll(missionDetails.getWaypoints());
+        mission.getWaypoints().forEach(waypoint -> waypoint.setMission(mission));
+
         return missionRepository.save(mission);
     }
 

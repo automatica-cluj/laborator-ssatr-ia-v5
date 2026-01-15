@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Details - Fleet Management</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="logo">🚁 Drone Fleet Management</h1>
+            <ul class="nav-menu">
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/drones">Drones</a></li>
+                <li><a href="/missions" class="active">Missions</a></li>
+                <li><a href="/monitor">Live Monitor</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="header-actions">
+            <h1>Mission Details</h1>
+            <a th:href="@{/missions/update/{id}(id=${mission.id})}" class="btn btn-warning">Update</a>
+        </div>
+
+        <!-- Mission Details -->
+        <div class="details-container">
+            <div class="details-section">
+                <h2>Mission Information</h2>
+                <p><strong>Mission ID:</strong> <span th:text="${mission.id}">MISSION-001</span></p>
+                <p><strong>Name:</strong> <span th:text="${mission.name}">Mission Name</span></p>
+                <p><strong>Description:</strong> <span th:text="${mission.description}">Mission Description</span></p>
+                <p><strong>Status:</strong> <span class="status-badge"
+                                                  th:classappend="${mission.status.toString().toLowerCase()}"
+                                                  th:text="${mission.status}">IN_PROGRESS</span></p>
+                <p><strong>Start Time:</strong> <span th:text="${mission.startTime != null ? #dates.format(mission.startTime, 'dd-MM-yyyy HH:mm:ss') : 'N/A'}">01-01-2024 12:00:00</span></p>
+                <p><strong>End Time:</strong> <span th:text="${mission.endTime != null ? #dates.format(mission.endTime, 'dd-MM-yyyy HH:mm:ss') : 'N/A'}">01-01-2024 13:00:00</span></p>
+            </div>
+
+            <div class="details-section">
+                <h2>Drone Information</h2>
+                <p th:if="${mission.drone != null}"><strong>Drone ID:</strong> <a th:href="@{/drones/{id}(id=${mission.drone.id})}" th:text="${mission.drone.id}">DRONE-001</a></p>
+                <p th:if="${mission.drone == null}"><strong>Drone:</strong> N/A</p>
+            </div>
+
+            <div class="details-section">
+                <h2>Waypoints</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Sequence</th>
+                            <th>Latitude</th>
+                            <th>Longitude</th>
+                            <th>Altitude</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="waypoint : ${mission.waypoints}">
+                            <td th:text="${waypoint.sequenceNumber}">1</td>
+                            <td th:text="${waypoint.latitude}">46.7712</td>
+                            <td th:text="${waypoint.longitude}">23.6236</td>
+                            <td th:text="${waypoint.altitude}">500</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(mission.waypoints)}">
+                            <td colspan="4" style="text-align: center; padding: 2rem;">
+                                No waypoints found for this mission.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Drone Management System - Lab 3 Exercițiul 2</p>
+    </footer>
+</body>
+</html>

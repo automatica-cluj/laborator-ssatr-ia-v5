@@ -5,6 +5,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import ro.utcluj.ssatr.lab3.drone.model.Drone;
+import ro.utcluj.ssatr.lab3.drone.model.Mission;
+import ro.utcluj.ssatr.lab3.drone.model.Waypoint;
+import java.util.List;
+
 import ro.utcluj.ssatr.lab3.drone.service.DroneService;
 import ro.utcluj.ssatr.lab3.drone.service.MissionService;
 import ro.utcluj.ssatr.lab3.drone.service.TelemetryService;
@@ -33,8 +41,7 @@ public class WebController {
         model.addAttribute("activeDrones", droneService.getActiveDrones().size());
         model.addAttribute("lowBatteryDrones", droneService.getLowBatteryDrones().size());
         model.addAttribute("activeMissions", missionService.getActiveMissions().size());
-
-        // TODO: Studenții pot adăuga mai multe statistici
+        model.addAttribute("totalMissions", missionService.getAllMissions().size());
         return "index";
     }
 
@@ -70,13 +77,113 @@ public class WebController {
     }
 
     /**
+     * Pagina cu detalii despre o misiune.
+     */
+    @GetMapping("/missions/{id}")
+    public String missionDetail(@PathVariable Integer id, Model model) {
+        model.addAttribute("mission", missionService.getMissionById(id));
+        return "mission-details";
+    }
+
+    /**
      * Pagina pentru crearea unei misiuni noi.
-     * TODO: Studenții vor implementa formularul.
      */
     @GetMapping("/missions/create")
     public String createMission(Model model) {
         model.addAttribute("drones", droneService.getAllDrones());
         return "mission-create";
+    }
+
+    /**
+     * Handle-uiește crearea unei misiuni noi.
+     */
+    @PostMapping("/missions/create")
+    public String createMission(@RequestParam String name,
+                                @RequestParam String description,
+                                @RequestParam(required = false) String droneId,
+                                @RequestParam(required = false, name = "waypoints.latitude") List<Double> latitudes,
+                                @RequestParam(required = false, name = "waypoints.longitude") List<Double> longitudes,
+                                @RequestParam(required = false, name = "waypoints.altitude") List<Double> altitudes) {
+        Mission mission = new Mission();
+        mission.setName(name);
+        mission.setDescription(description);
+
+        if (droneId != null && !droneId.isEmpty()) {
+            Drone drone = droneService.getDroneById(droneId);
+            mission.setDrone(drone);
+        }
+
+        if (latitudes != null) {
+            for (int i = 0; i < latitudes.size(); i++) {
+                Waypoint waypoint = new Waypoint();
+                waypoint.setLatitude(new java.math.BigDecimal(latitudes.get(i)));
+                waypoint.setLongitude(new java.math.BigDecimal(longitudes.get(i)));
+                waypoint.setAltitude(new java.math.BigDecimal(altitudes.get(i)));
+                waypoint.setSequenceNumber(i + 1);
+                waypoint.setMission(mission);
+                mission.getWaypoints().add(waypoint);
+            }
+        }
+
+        missionService.createMission(mission);
+        return "redirect:/missions";
+    }
+
+    /**
+     * Handle-uiește ștergerea unei misiuni.
+     */
+    @GetMapping("/missions/delete/{id}")
+    public String deleteMission(@PathVariable Integer id) {
+        missionService.deleteMission(id);
+        return "redirect:/missions";
+    }
+
+    /**
+     * Pagina pentru actualizarea unei misiuni.
+     */
+    @GetMapping("/missions/update/{id}")
+    public String showUpdateMissionForm(@PathVariable Integer id, Model model) {
+        model.addAttribute("mission", missionService.getMissionById(id));
+        model.addAttribute("drones", droneService.getAllDrones());
+        return "mission-update";
+    }
+
+    /**
+     * Handle-uiește actualizarea unei misiuni.
+     */
+    @PostMapping("/missions/update/{id}")
+    public String updateMission(@PathVariable Integer id, @ModelAttribute("mission") Mission missionDetails, 
+                                @RequestParam(required = false) String droneId,
+                                @RequestParam(required = false, name = "waypoints.latitude") List<Double> latitudes,
+                                @RequestParam(required = false, name = "waypoints.longitude") List<Double> longitudes,
+                                @RequestParam(required = false, name = "waypoints.altitude") List<Double> altitudes) {
+        Mission mission = missionService.getMissionById(id);
+        mission.setName(missionDetails.getName());
+        mission.setDescription(missionDetails.getDescription());
+        mission.setStatus(missionDetails.getStatus());
+
+        if (droneId != null && !droneId.isEmpty()) {
+            Drone drone = droneService.getDroneById(droneId);
+            mission.setDrone(drone);
+        } else {
+            mission.setDrone(null);
+        }
+
+        mission.getWaypoints().clear();
+        if (latitudes != null) {
+            for (int i = 0; i < latitudes.size(); i++) {
+                Waypoint waypoint = new Waypoint();
+                waypoint.setLatitude(new java.math.BigDecimal(latitudes.get(i)));
+                waypoint.setLongitude(new java.math.BigDecimal(longitudes.get(i)));
+                waypoint.setAltitude(new java.math.BigDecimal(altitudes.get(i)));
+                waypoint.setSequenceNumber(i + 1);
+                waypoint.setMission(mission);
+                mission.getWaypoints().add(waypoint);
+            }
+        }
+
+        missionService.updateMission(id, mission);
+        return "redirect:/missions/{id}";
     }
 
     /**
@@ -87,11 +194,4 @@ public class WebController {
     public String liveMonitor() {
         return "monitor";
     }
-
-    /**
-     * TODO: Studenții pot adăuga:
-     * - /analytics - pagină cu grafice și statistici
-     * - /drones/create - formular creare dronă nouă
-     * - /missions/{id} - detalii misiune
-     */
 }
