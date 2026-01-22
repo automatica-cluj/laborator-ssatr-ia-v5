@@ -28,8 +28,12 @@ public class DroneSimulatorMain {
 //        drones.add(new DroneSimulator("DRONE-006", 46.7650, 23.6380, 3));
 //        drones.add(new DroneSimulator("DRONE-DE-001", 52.5200, 13.4050, 3));
         // Somewhere in the United States (Chicago)
-        drones.add(new DroneSimulator("SSATR-DRONE-XX", 41.8781, -87.6298, 3));
+        drones.add(new DroneSimulator("SSATR-DRONE-TECHTREK", 41.8781, -87.6298, 3));
 
+        drones.add(new DroneSimulator("SSATR-DRONE-TECHTREK1", 42.8781, -87.6298, 3));
+        drones.add(new DroneSimulator("SSATR-DRONE-TECHTREK2", 43.8781, -87.6298, 3));
+        drones.add(new DroneSimulator("SSATR-DRONE-TECHTREK3", 44.8781, -87.6298, 3));
+        drones.add(new DroneSimulator("SSATR-DRONE-TECHTREK4", 45.8781, -87.6298, 3));
         // Pornim toate drone-urile
         for (DroneSimulator drone : drones) {
             drone.start();
